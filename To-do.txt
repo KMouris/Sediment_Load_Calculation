@@ -1,6 +1,6 @@
 - adapt names: Soil Yield --> Sediment yield (same for total soil yield)
 - create config.py file for all user interaction and to load packages
-- make the bedload guesstimations optional
+- make the bedload guesstimation optional
 - Stick to PEP8
 - add docstrings
 - write readme
