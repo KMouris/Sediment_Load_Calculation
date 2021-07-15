@@ -54,20 +54,22 @@ except ModuleNotFoundError as b:
 """
 
 # Import input rasters:
-cp_path = r'P:\aktiv\2018_DLR_DIRT-X\300_Modelling\310_Models\01_Erosion_model\18_SY_052016_042018\Rasters\Cp_Mean_snap.tif'
-k_path = r'P:\aktiv\2018_DLR_DIRT-X\300_Modelling\310_Models\01_Erosion_model\18_SY_052016_042018\Rasters\kfac_st_snap.tif'
-ls_path = r'P:\aktiv\2018_DLR_DIRT-X\300_Modelling\310_Models\01_Erosion_model\18_SY_052016_042018\Rasters\LS_V11b.tif'
-p_path = r'P:\aktiv\2018_DLR_DIRT-X\300_Modelling\310_Models\01_Erosion_model\18_SY_052016_042018\Rasters\p_factor.tif'
-tt_path = r'P:\aktiv\2018_DLR_DIRT-X\300_Modelling\310_Models\01_Erosion_model\18_SY_052016_042018\Rasters\traveltime_final_h_snap.tif'
+cp_path = r'Y:\Abt1\hiwi\Oreamuno\SY_062016_082019\Rasters\Cp_Mean_snap.tif'
+k_path = r'Y:\Abt1\hiwi\Oreamuno\SY_062016_082019\Rasters\kfac_st_snap.tif'
+ls_path = r'Y:\Abt1\hiwi\Oreamuno\SY_062016_082019\Rasters\LS_V11b.tif'
+p_path = r'Y:\Abt1\hiwi\Oreamuno\SY_062016_082019\Rasters\p_factor.tif'
+tt_path = r'Y:\Abt1\hiwi\Oreamuno\SY_062016_082019\Rasters\traveltime_final_h_snap.tif'
 
 # Rfactor rasters:
-R_folder = r'Y:\Abt1\hiwi\Oreamuno\SY_062016_082019\Calculations\Python_Programs\Results\RFactor_REM_db\CorrectedData'
+R_folder = r'Y:\Abt1\hiwi\Oreamuno\Tasks\Snow_Codes\Modifications_MF\Results\R_factor_REM_db'
 
 # Clipping shape:
-clip_path = r'P:\aktiv\2018_DLR_DIRT-X\300_Modelling\310_Models\01_Erosion_model\18_SY_052016_042018\Shape'
+# clip_path = r'P:\aktiv\2018_DLR_DIRT-X\300_Modelling\310_Models\01_Erosion_model\18_SY_052016_042018\Shape'
+clip_path = r'Y:\Abt1\hiwi\Oreamuno\SY_062016_082019\Clipping_Shapes'
 
 # Results:
-results_path = r'P:\aktiv\2018_DLR_DIRT-X\300_Modelling\310_Models\01_Erosion_model\18_SY_052016_042018\Results\Rain_only'
+# results_path = r'P:\aktiv\2018_DLR_DIRT-X\300_Modelling\310_Models\01_Erosion_model\18_SY_052016_042018\Results\Rain_only'
+results_path = r'Y:\Abt1\hiwi\Oreamuno\SY_062016_082019\Calculations\GIT_codes\SYSL_Results'
 
 # Calculation constants:
 beta = -0.5639  # Must be a negative number!
