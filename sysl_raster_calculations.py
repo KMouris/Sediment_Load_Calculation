@@ -1,10 +1,5 @@
-import shutil
-import gdal
-import numpy as np
-import pandas as pd
-import numpy.ma as ma
-import os
-import sys
+
+from config import *
 
 #In this file the user finds the functions that relate to checking and extracting data directly from raster files
 

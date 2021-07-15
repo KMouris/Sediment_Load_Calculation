@@ -1,11 +1,7 @@
-import numpy as np
-import pandas as pd
-import numpy.ma as ma
-from calendar import monthrange
-import os
 
+from config import *
 import SYSL_SaveDataFunctions as r_save
-import SYSL_RasterDataFunctions as r_data
+import sysl_raster_calculations as r_data
 
 
 # In this file the user finds the functions that relate to calculations done either on the masked arrays obtained from the

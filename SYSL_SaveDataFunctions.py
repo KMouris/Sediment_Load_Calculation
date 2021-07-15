@@ -1,10 +1,6 @@
-import shutil
-import gdal
-import numpy as np
-import pandas as pd
-import numpy.ma as ma
-import os
-import sys
+
+from config import *
+
 
 #IN this file, the user finds the functions that save either raster files or the summary tables as .txt format.
 
