@@ -42,7 +42,7 @@ R_filenames = sorted(glob.glob(R_folder + "\*.tif"))
 # print(R_filenames)
 
 # 2. Get all shapes into a list
-Clip_filenames = glob.glob(clip_path + "\*.shp")
+clip_filenames = glob.glob(clip_path + "\*.shp")
 # print(Clip_filenames)
 
 # 3. Check input raster properties: save all raster input paths into list, including 1 R factor file
@@ -50,23 +50,23 @@ Clip_filenames = glob.glob(clip_path + "\*.shp")
 #   If all rasters have the same data properties, the function assigns the default projection and GEOTransform for the
 #   total watershed rasters.
 raster_list = [R_filenames[0], cp_path, k_path, ls_path, p_path, tt_path]
-GT, Proj = rc.check_input_rasters(raster_list, cell_area)
+gt, proj = rc.check_input_rasters(raster_list, cell_area)
 
 # 4. Save each constant into an array: if more input rasters are used, add them here with a corresponding array name
 #    factor_array
 cp_array = rc.raster_to_array(cp_path)  # Array with C factor values
-k_array = rc.raster_to_array(k_path)    # Array with K factor values
-p_array = rc.raster_to_array(p_path)    # Array with P factor values
+k_array = rc.raster_to_array(k_path)  # Array with K factor values
+p_array = rc.raster_to_array(p_path)  # Array with P factor values
 ls_array = rc.raster_to_array(ls_path)  # Array with LS factor values
 tt_array = rc.raster_to_array(tt_path)  # Array with transport time values
 
 # 5. Get SDR raster, which is independent of R factor and thus constant. The function also saves the SDR, if last input
 #    value is set to "True"
-SDR_array = r_calc.calculate_sdr(tt_array, beta, results_path, GT, Proj, True)
+SDR_array = r_calc.calculate_sdr(tt_array, beta, results_path, gt, proj, True)
 
 # 6. Create 3D array to save the results to a .txt file and a vector to save the dates
 #    Num. Arrays: 1 for each shape file + total, num. rows: months to analyze, columns: 4 (one for each result)
-data_summary = np.empty((len(Clip_filenames) + 1, len(R_filenames), 4))
+data_summary = np.empty((len(clip_filenames) + 1, len(R_filenames), 4))
 dates_vector = np.full((len(R_filenames), 1), "", dtype=object)
 # print("3D shape: ", data_summary.shape)
 # print("Dates shape: ", dates_vector.shape)
@@ -91,33 +91,33 @@ for file in R_filenames:
     fm.check_folder(total_path)
 
     # 3. Calculate results for each R factor file (soil Loss(SL), sediment yield (SY), total SY, and bed load(BL))
-    SL_array = r_calc.calculate_sl(R_array, cp_array, k_array, p_array, ls_array)
-    SY_array = r_calc.calculate_sy(SL_array, SDR_array, cell_area)
-    SY_Tot_array = r_calc.calculate_total_sy(SY_array)
-    BedL = r_calc.calculate_bl(SY_Tot_array, r_date)
+    sl_array = r_calc.calculate_sl(R_array, cp_array, k_array, p_array, ls_array)
+    sy_array = r_calc.calculate_sy(sl_array, SDR_array, cell_area)
+    sy_tot_array = r_calc.calculate_total_sy(sy_array)
+    bedL = r_calc.calculate_bl(sy_tot_array, r_date)
 
     # 4. Save the SL and SY for the entire watershed
     #   4.1. Save SL and save mean value to array
-    save_SL = total_path + "\SL\SL_Banja_" + r_date + "_Total.tif"  # Assign raster pth, including name and extension
-    rc.save_raster(SL_array, save_SL, GT, Proj)  # Save array as raster
-    data_summary[0][i][0] = np.nanmean(SL_array)  # Get SL mean, and save to the 1st column of each array, row "i"
+    save_sl = total_path + "\SL\SL_Banja_" + r_date + "_Total.tif"  # Assign raster pth, including name and extension
+    rc.save_raster(sl_array, save_sl, gt, proj)  # Save array as raster
+    data_summary[0][i][0] = np.nanmean(sl_array)  # Get SL mean, and save to the 1st column of each array, row "i"
 
     #   4.2 Save SY and save mean value to array
-    save_SY = total_path + "\SY\SY_Banja_" + r_date + ".tif"  # Assign raster pth, including name and extension
-    rc.save_raster(SY_array, save_SY, GT, Proj)  # Save array as raster
-    data_summary[0][i][1] = np.nanmean(SY_array)  # Get SY mean, and save to the 2nd column of each array, row "i"
+    save_sy = total_path + "\SY\SY_Banja_" + r_date + ".tif"  # Assign raster pth, including name and extension
+    rc.save_raster(sy_array, save_sy, gt, proj)  # Save array as raster
+    data_summary[0][i][1] = np.nanmean(sy_array)  # Get SY mean, and save to the 2nd column of each array, row "i"
 
     #   4.3 Save Total sediment yield and save mean value to array
-    save_SYTot = total_path + "\SY_Total\SYTot_Banja_" + r_date + ".tif"  # assign output file name
-    rc.save_raster(SY_Tot_array, save_SYTot, GT, Proj)  # Save array as raster
-    data_summary[0][i][2] = np.nanmean(SY_Tot_array)  # Get SL_tot mean
+    save_sy_tot = total_path + "\SY_Total\SYTot_Banja_" + r_date + ".tif"  # assign output file name
+    rc.save_raster(sy_tot_array, save_sy_tot, gt, proj)  # Save array as raster
+    data_summary[0][i][2] = np.nanmean(sy_tot_array)  # Get SL_tot mean
 
     # 4.4 Save Bed Load to array
-    data_summary[0][i][3] = BedL
+    data_summary[0][i][3] = bedL
 
     # Loop through Clipping Shapes (Masks) ------------------------------------------------------------------------- #
     k = 1  # Loop for every array in the 3D array. Starts at 1, since array[0] is the total watershed.
-    for shape in Clip_filenames:
+    for shape in clip_filenames:
         shape_name = os.path.splitext(os.path.basename(shape))[0][10:]  # File name must be is Catchment_NAME.
 
         # 1. Create Folders to Save clipped rasters:
@@ -129,26 +129,26 @@ for file in R_filenames:
 
         # 2.1 Clip SL, save raster and save mean_SL to 3D array
         save_clip_sl = save_path + "\\SL\SL_" + r_date + "_" + shape_name + ".tif"
-        rc.clip_raster(save_SL, save_clip_sl, shape)  # Clip and save SL raster
+        rc.clip_raster(save_sl, save_clip_sl, shape)  # Clip and save SL raster
         data_summary = r_calc.clipped_sl_mean(save_clip_sl, data_summary, i, k)
 
         # 2.2 Clip SY and save raster
         save_clip_sy = save_path + "\\SY\SY_" + r_date + "_" + shape_name + ".tif"
-        rc.clip_raster(save_SY, save_clip_sy, shape)  # Clip and save SY raster
+        rc.clip_raster(save_sy, save_clip_sy, shape)  # Clip and save SY raster
 
         # 3. Generate the Total SY raster and save mean SY and total SY to 3D array
         #  3.1 Get total SY clipped array and bed load, and save the SY mean, SY Total and BL to 3D array, row "i" in
         #  array "k", columns 1 and 2
-        sy_tot_array, data_summary = r_calc.clipped_sy(save_clip_sy, data_summary, i, k)
-        BedL = r_calc.calculate_bl(sy_tot_array, r_date)
-        data_summary[k][i][3] = BedL
+        sy_tot_array_clip, data_summary = r_calc.clipped_sy(save_clip_sy, data_summary, i, k)
+        bedL = r_calc.calculate_bl(sy_tot_array_clip, r_date)
+        data_summary[k][i][3] = bedL
 
         #   3.2 Get the GEOTransform from the clipped raster, which is different from the total raster
-        GT_clip, Proj_clip = rc.get_raster_data(save_clip_sy)
+        gt_clip, proj_clip = rc.get_raster_data(save_clip_sy)
 
         #   3.3 Save Clipped total SY array to raster:
         save_name = save_path + "\\SY_Total\SYTot_" + r_date + "_" + shape_name + ".tif"
-        rc.save_raster(SY_Tot_array, save_name, GT_clip, Proj)
+        rc.save_raster(sy_tot_array_clip, save_name, gt_clip, proj_clip)
 
         k += 1
 
@@ -165,7 +165,7 @@ for k in range(0, int(data_summary.shape[0])):
     if k == 0:
         file_name = total_path + "\\BanjaResults.txt"
     else:  # for catchments, the file name must be is Catchment_NAME.
-        shape_name = os.path.splitext(os.path.basename(Clip_filenames[k - 1])[10:])[0]
+        shape_name = os.path.splitext(os.path.basename(clip_filenames[k - 1])[10:])[0]
         file_name = results_path + "\\" + shape_name + "\\" + shape_name + ".txt"
 
     # 2. Save array using function
