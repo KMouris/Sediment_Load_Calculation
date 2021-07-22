@@ -91,11 +91,11 @@ for file in R_filenames:
     total_path = results_path + "\\Total"
     r_data.CheckFolder(total_path)
 
-    # 3. Calculate results for each R factor file (Soil Loss, Soil Yield, Total Soil Yield)
-    SL_array = r_calc.calculate_sl(R_array, cp_array, k_array, p_array, ls_array)  # Calculate SY for eac R Factor.
-    SY_array = r_calc.Calculate_SY(SL_array, SDR_array, cell_area)  # Calculate SL
-    SY_Tot_array = r_calc.Calculate_TotalSY(SY_array)  # Calculate the sum of all cells in SY
-    BedL = r_calc.Calculate_BL(SY_Tot_array, r_date)
+    # 3. Calculate results for each R factor file (soil Loss(SL), sediment yield (SY), total SY, and bed load(BL))
+    SL_array = r_calc.calculate_sl(R_array, cp_array, k_array, p_array, ls_array)
+    SY_array = r_calc.calculate_sy(SL_array, SDR_array, cell_area)
+    SY_Tot_array = r_calc.calculate_total_sy(SY_array)
+    BedL = r_calc.calculate_bl(SY_Tot_array, r_date)
 
     # 4. Save the SL and SY for the entire watershed
     #   4.1. Save SL and save mean value to array
@@ -129,24 +129,24 @@ for file in R_filenames:
         # 2. Clip SL and SY rasters to shape and save resulting raster automatically
 
         # 2.1 Clip SL, save raster and save mean_SL to 3D array
-        save_CLipSL = save_clip + "\\SL\SL_" + r_date + "_" + shape_name + ".tif"
-        r_calc.Clip_Raster(save_SL, save_CLipSL, shape)  # Clip and save SL raster
-        data_summary = r_calc.Clipped_SLMean(save_CLipSL, data_summary, i, k)
+        save_clip_sl = save_clip + "\\SL\SL_" + r_date + "_" + shape_name + ".tif"
+        r_calc.Clip_Raster(save_SL, save_clip_sl, shape)  # Clip and save SL raster
+        data_summary = r_calc.clipped_sl_mean(save_clip_sl, data_summary, i, k)
 
         # 2.2 Clip SY and save raster
-        save_ClipSY = save_clip + "\\SY\SY_" + r_date + "_" + shape_name + ".tif"
-        r_calc.Clip_Raster(save_SY, save_ClipSY, shape)  # Clip and save SY raster
+        save_clip_sy = save_clip + "\\SY\SY_" + r_date + "_" + shape_name + ".tif"
+        r_calc.Clip_Raster(save_SY, save_clip_sy, shape)  # Clip and save SY raster
 
         # 3. Generate the Total SY raster and save mean SY and total SY to 3D array
 
         #  3.1 Get total SY clipped array and bed load, and save the SY mean, SY Total and BL to 3D array, row "i" in
         #  array "k", columns 1 and 2
-        SY_Tot_array, data_summary = r_calc.Clipped_TotalSY(save_ClipSY, data_summary, i, k)
-        BedL = r_calc.Calculate_BL(SY_Tot_array, r_date)
+        sy_tot_array, data_summary = r_calc.clipped_sy(save_clip_sy, data_summary, i, k)
+        BedL = r_calc.calculate_bl(sy_tot_array, r_date)
         data_summary[k][i][3] = BedL
 
         #   3.2 Get the GEOTransform from the clipped raster, which is different from the total raster
-        GT_clip, Proj_clip = r_data.GetRasterData(save_ClipSY)
+        GT_clip, Proj_clip = r_data.GetRasterData(save_clip_sy)
 
         #   3.3 Save Clipped total SY array to raster:
         save_name = save_clip + "\\SY_Total\SYTot_" + r_date + "_" + shape_name + ".tif"

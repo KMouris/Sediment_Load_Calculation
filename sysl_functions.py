@@ -1,82 +1,151 @@
+"""
+@author: Kilian Mouris and Maria Fernanda Morales Oreamuno
+
+Module contains functions that relate to the calculations on either masked or unmasked np.arrays, which correspond to
+the input raster data.
+
+Functions included in this module directly calculate the sediment loss, sediment yield and total sediment yield for each
+sub-catchment.
+
+The equations in this module, corresponding to the calculation of the SY and SL are based on the following papers:
+
+* SDR and SY:
+    Ferro, V.; Porto, P. Sediment delivery distributed (SEDD) model. J. Hydrol. Eng. 2000, 5, 411–422.
+        DOI: https://doi.org/10.1061/(ASCE)1084-0699(2000)5:4(411)
+    Fernandez, C., Wu, J. Q., McCool, D. K., & Stöckle, C. O. (2003). Estimating water erosion and sediment yield with
+        GIS, RUSLE, and SEDD. Journal of soil and Water Conservation, 58(3), 128-136.
+
+* Sediment loss: Renard, K. et al. 1997. Predicting Soil Erosion by Water: A Guide to Conservation Planning
+                with the Revised Universal Soil Loss Equation (RUSLE). s.l. : Agricultural Handbook 703, USDA-ARS, 1997
+
+* Bed load: Turowski, J. M., Rickenmann, D., & Dadson, S. J. (2010). The partitioning of the total sediment load of a
+            river into suspended load and bedload: a review of empirical data. Sedimentology, 57(4), 1126-1146.
+"""
 
 from config import *
 import SYSL_SaveDataFunctions as r_save
 import sysl_raster_calculations as r_data
 
 
-# In this file the user finds the functions that relate to calculations done either on the masked arrays obtained from the
-# raster files or directly on the raster files for both the total and clipped raster files.
+# Functions for total watershed rasters:
 
-# Function calculates the mean from any raster, in array form. It excludes all nan (NOData values) from the calculation
-def GetMean(array):
-    mean = np.nanmean(array)
-    return mean
+def calculate_sdr(tt, beta, path, GT, Proj, Save):
+    """
+    Function calculates the sediment delivery ratio (SDR) data for each cell, based on the travel time data and beta
+    value. The equations are based on the SEDD model by Ferro and Porto (2000)
 
+    Args:
+    :param tt: np.array with data from travel time raster
+    :param beta: float value for beta, which was obtained from calibration. Value must be negative.
+    :param path: file path (including name.tif) with which to save the SDR data values.
+    :param GT: tuple with GEOTransform data with which to save resulting raster
+    :param Proj: tuple with projection data with which to save the resulting raster
+    :param Save: boolean, when True saves the SDR data to a .tif raster.
 
-## FUNCTIONS USED IN TOTAL WATERSHED RASTERS
+    :return: np.array with SDR values
+    """
+    sdr = np.exp(tt * beta)  # SDR operation
+    sdr = np.where(sdr.mask == True, np.nan, sdr)  # Convert all masked cells to np.nan values
 
-# Function calculates the SDR raster, from the travel time and beta values
-# Can also save the SDR raster to a .tif raster file if needed. Send "True" as save value
-def CalculateSDR(tt, beta, path, GT, Proj, Save):
-    SDR = np.exp(tt * beta)  # SDR operation
-    SDR = np.where(SDR.mask == True, np.nan, SDR)  # Convert all masked cells to np.nan values
-
-    if Save == True:
+    if Save:
         # Save SDR to folder:
         path = path + "\SDR"  # Create Folder path
-        SDR_name = path + "\SDR.tif"  # Create file name
+        sdr_name = path + "\SDR.tif"  # Create file name
 
         if not os.path.exists(path):  # If the SDR folder does not exist, create one
             print("Creating folder: ", path)
             os.makedirs(path)
 
-        r_save.SaveRaster(SDR, SDR_name, GT, Proj)  # Saves array to raster
+        r_save.SaveRaster(sdr, sdr_name, GT, Proj)  # Saves array to raster
 
-    return SDR  # Return SDR with the masked cells with 'nan' value
-
-
-# Function: receives the R, C, K, P, LS rasters and multiplies them in order to get the SL value
-#   If more rasters are to be used for this calculation in the future, they must be added here and in every instance of the function
-def Calculate_SL(R, C, K, P, LS):
-    SL = R * C * K * P * LS
-    # In cells where not all rasters have values, the multiply function will place an inf value or keep a "--".
-    # We must convert these to nodata "nan" values
-    SL = SL.filled(np.nan)  # Convert cells which multiplied a masked cell with a value cell (value = "--") to np.nan
-    # SL = np.where(np.isinf(SL), np.nan, SL) #Convert possible "inf" values to np.nan ---Uncomment if any value appears to be "inf"
-
-    return SL  # Return Soil Loss Array
+    return sdr  # Return SDR with the masked cells with 'nan' value
 
 
-# Function calculates the Soil Yield value for each cell in the raster, by multiplying SL by SDR and the cell area
-# Receives the SL and SDR rasters calculated previously and the cell area value
-def Calculate_SY(SL, SDR, cell_area):
-    SY = np.multiply(SL, SDR) * cell_area  # Multpiply SDR by SL to get total soil yield in each cell
-    SY = np.where(np.isinf(SY), np.nan, SY)  # Remove any "inf" value, like with the SY calculations
-    return SY  # return SY to main code
+def calculate_sl(R, C, K, P, LS):
+    """
+    Function calculates soil loss (ton/ha*month) based on the RUSLE model by Renard et al (1997)
+
+    Args:
+    :param R: np.array with monthly R(ain) factor values
+    :param C: np.array with land C(over) factor values
+    :param K: np.array with soil erodibility factor
+    :param P: np.array with support P(ractice) factor
+    :param LS: np.array with L(ength) and S(lope) factor
+
+    :return: np.array with sediment loss values
+
+    Note: If more values are to be added to the equation in the future, they must be added as an additional argument to
+        the function.
+    """
+    sl = R * C * K * P * LS
+
+    # Convert masked cells to np.nan values
+    sl = sl.filled(np.nan)  # Convert cells which multiplied a masked cell with a value cell (value = "--") to np.nan
+
+    # Convert possible "inf" values to np.nan
+    # SL = np.where(np.isinf(SL), np.nan, SL)  ---Uncomment if any value appears to be "inf"
+
+    return sl
 
 
-# Function Calculates the total SY for the entire watershed and assigns this value to every cell in a new raster
-# Receives only the cell-wise SY raster and sums all non-NoData cells (excluding cells with nan value)
-def Calculate_TotalSY(SY):
-    sum = np.nansum(SY)  # Sum all cells with values (non-nan cells)
-    SY_Tot = np.ma.where(SY >= 0, sum, np.nan)  # For all cells with values, assign the value "sum"
+def calculate_sy(SL, SDR, cell_area):
+    """
+    Function calculates the sediment yield (ton/month) for each cell in the input rasters.
 
-    return SY_Tot
+    Args:
+    :param SL: np.array with soil loss data
+    :param SDR: np.array with sediment delivery ratio values
+    :param cell_area: float with the area of each cell, in ha.
+
+    :return: np.array with sediment yield values
+    """
+    sy = np.multiply(SL, SDR) * cell_area
+    sy = np.where(np.isinf(sy), np.nan, sy)  # Convert 'inf' and masked cells to np.nan
+
+    return sy
 
 
-# Function estimates the BL after Turowski based on the suspended load rate
-def Calculate_BL(sy, dates):
+def calculate_total_sy(SY):
+    """
+    Function calculates the total sediment yield for an input SY raster, by adding all value cells (excluding np.nan
+    cells). Generates an np.array where each value cell has the same value, equivalent to the total SY value.
+
+    Args:
+    :param SY: np.array with sediment yield data values
+
+    :return: np.array with each cell containing the total SY value
+    """
+    sum_sy = np.nansum(SY)
+    sy_tot = np.ma.where(SY >= 0, sum_sy, np.nan)  # For all cells with values, assign the value "sum"
+
+    return sy_tot
+
+
+def calculate_bl(sy, dates):
+    """
+    Function calculates the bed load (BL) after Turowski et al (2010) based on the suspended load rate
+
+    Args:
+    :param sy: np.array with sediment yield values
+    :param dates: string with date in format YYYYMM
+
+    :return: np.array with bed load values
+    """
+    # Get year and month
     year = int(dates[0:4])
     month = int(dates[4:6])
     days_per_month = monthrange(year, month)[1]
     sec_month = days_per_month * 24 * 60 * 60
-    SL = GetMean(sy)
-    sl_rate = SL / sec_month *1000
+
+    sl = np.nanmean(sy)
+    sl_rate = sl / sec_month * 1000
+
     if sl_rate <= 0.394206310:
         bl_rate = 0.833 * sl_rate ** 1.34
     else:
         bl_rate = 0.437 * sl_rate ** 0.647
     bl = bl_rate / 1000 * sec_month
+
     return bl
 
 
@@ -99,25 +168,48 @@ def Clip_Raster(original_raster, clipped_raster, shape):
 
 
 # Function calculates the mean for the clipped SL raster
-# Receives the clipped SL file path, the 3D array where to save the mean value (column 0) and the row (i) and array (k)to fill
-def Clipped_SLMean(SL_path, data, i, k):
+
+def clipped_sl_mean(SL_path, data, i, k):
+    """
+    Function calculates the mean for the clipped soil loss (SL) raster data
+
+    Args:
+    :param SL_path: path for the clipped soil loss raster
+    :param data: 3D np.array where the summary results for the given watershed are to be stored
+    :param i: int with the row value to fill
+    :param k: int with the array (in the 3D array) to be filled
+
+    :return: modified 'data' 3D np.array, which will include the mean SL value for the given date (row i)
+    """
     # Convert SL raster to array first:
-    SL_ClippedArray = r_data.RasterToArray(SL_path)  # Using existing function, get the masked array
-    data[k][i][0] = GetMean(SL_ClippedArray)  # get the array average (average SL for the raster in array form)
-    return data  # return modified data array
+    sl_clipped_array = r_data.RasterToArray(SL_path)  # Get the masked array
+    data[k][i][0] = np.nanmean(sl_clipped_array)      # get the array average
+
+    return data
 
 
-# Function to calculate the total SY value for the clipped rasters. Since the clipped rasters have not been, it must first get the masked array. To avoid to save the SY array
-# multiple times, the function calculates the Total SY raster, mean SY value and the sum SY (for the entire raster) and saves it to the data 3D array
-# Receives the clipped SY file path, the 3D array where to save the mean value (column 0) and the row (i) and array (k)to fill
-def Clipped_TotalSY(SY_path, data, i, k):
+def clipped_sy(SY_path, data, i, k):
+    """
+    Function calculates the mean and total sediment yield (SY) for a given clipped raster and saved it to a 3D array,
+    which contains the summary data for the given watershed.
+
+    Args:
+    :param SY_path: path of clipped SY raster to extract data from
+    :param data: 3D np.array where the summary results for the given watershed are to be stored
+    :param i: int with the row value to fill
+    :param k: int with the array (in the 3D array) to be filled
+
+    :return: modified 'data' 3D np.array, which will include the mean SY and total SY values for the given date (row i)
+            and the clipped SY raster
+    """
     # 1. Convert SY raster to array
-    SY_ClippedArray = r_data.RasterToArray(SY_path)
+    sy_clipped_array = r_data.RasterToArray(SY_path)
     # 2. Calculate Total SY raster:
-    Clipped_SYTotal = Calculate_TotalSY(SY_ClippedArray)
+    clipped_sy_total = calculate_total_sy(sy_clipped_array)
     # 3. Calculate Mean SY value for the raster and save it to the 3D array
-    data[k][i][1] = GetMean(SY_ClippedArray)
-    # 4. Calculate total SY value for the clipped watershed (which is the same as the mean, since all cells have the same value):
-    data[k][i][2] = GetMean(Clipped_SYTotal)
-    # 5. Return both the Clipped Total SY and the modified 3D data array
-    return Clipped_SYTotal, data
+    data[k][i][1] = np.nanmean(sy_clipped_array)
+    # 4. Calculate total SY value for the clipped watershed
+    # (which is the same as the mean, since all cells have the same value):
+    data[k][i][2] = np.nanmean(clipped_sy_total)
+
+    return clipped_sy_total, data
