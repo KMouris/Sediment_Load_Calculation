@@ -1,9 +1,9 @@
 """
-@author: María Fernanda Morales Oreamuno
+@author: Maria Fernanda Morales Oreamuno
 
 
 Module contains functions that reads and create files and folders, including reading file names and saving files other
-than raster files.
+than raster files (e.g. .txt files).
 """
 
 from config import *
@@ -67,8 +67,16 @@ def get_date(file_path):
     return date
 
 
-#Function: receives a folder path and checks if the folder exists, if it does not yet exist, it creates the folder and its subfolders
-def CheckFolder(path):
+def check_folder(path):
+    """
+    Function checks if a folder, in which the data for a given watershed will be saved, exists and, if it doesn't, it
+     creates it, along with the sub-folders in which to save the soil loss (SL) sediment yield (SY) and total SY.
+
+     Args:
+    :param path: path of folder to check for
+
+    :return: ---
+    """
     if not os.path.exists(path):
         print("Creating folder: ", path)
         os.makedirs(path)
@@ -77,24 +85,37 @@ def CheckFolder(path):
         os.makedirs(path + "\\SY_Total")
 
 
-#Function saves the summary table for the given shape "k" to a .txt file. The file summarizes the Mean SL, mean SY and total SY for each month-date combination
-#Receives the 3D array, the array to sake "k", the array with the dates in column form, and the save directory
-def Save_SummaryTable(TDA, k, dates, save_path):
-    # 1. Extract the "k" array from the 3D array and convert it to a 2D array
-    data = TDA[k,:,:] #Save current array "k" as a single 2D matrix
-    data = np.reshape(data,(int(TDA.shape[1]),int(TDA.shape[2]))) #reshape m as 2D matrix, since we already removed all other arrays that made it a 3D array
+def save_summary_table(TDA, k, dates, save_path):
+    """
+    Function saves the data from a numpy array into a .txt file. The data in the np.array corresponds to the summary
+    data (mean SL, mean SY, total SY, and bed load (optional) for each month.
 
-    #2. Generate individual Data Frames
-    # Set data column names
-    columns = ["Mean Soil Loss [Ton/Ha*Month]", "Mean Soil Yield [Ton/month]", 'Total Soil Yield [ton/month]', 'Bed Load [ton/month]']
+    Args:
+    :param TDA: 3D np.array
+    :param k: the array from the 3D array to save for (which corresponds to a given watershed)
+    :param dates: np.array with the date for each analyzed month (in string YYYYMM format)
+    :param save_path: file path (including name.txt) with which to save resulting tabe
+
+    :return: ---
+
+    Note: The function first transforms the 3D np.array to a 2D array, and then converts it to a data frame and joins it
+    with the df for the dates. It then saves the combined data frame to a .txt file
+    """
+    # 1. Extract the "k" array from the 3D array and convert it to a 2D array
+    data = TDA[k, :, :]
+    data = np.reshape(data, (int(TDA.shape[1]), int(TDA.shape[2])))
+
+    # 2. Generate individual Data Frames
+    columns = ["Mean Soil Loss [ton/ha*month]", "Mean Sediment Yield [ton/month]", 'Total Sediment Yield [ton/month]',
+               'Bed Load [ton/month]']
     column_date = ['Date']
     #   2.1 Generate Data Frame with data values
     df = pd.DataFrame(data=data, index=None, columns=columns)
     #   2.2 Generate Data Frame with dates:
     df_dates = pd.DataFrame(data=dates, index=None, columns=column_date)
     #   2.3 Generate Final Table by joining Dates and the value data frames:
-    Results = pd.concat([df_dates, df], axis=1)
+    results = pd.concat([df_dates, df], axis=1)
 
-    #3. Save the final Data frame to a .txt file:
-    Results.to_csv(save_path, index=False, sep='\t', na_rep="")
+    # 3. Save the final Data frame to a .txt file:
+    results.to_csv(save_path, index=False, sep='\t', na_rep="")
     print("Summary table saved: ", save_path)
