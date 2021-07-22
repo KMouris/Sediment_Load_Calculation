@@ -23,7 +23,6 @@ The equations in this module, corresponding to the calculation of the SY and SL 
 """
 
 from config import *
-import SYSL_SaveDataFunctions as r_save
 import sysl_raster_calculations as r_data
 
 
