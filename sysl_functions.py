@@ -23,7 +23,7 @@ The equations in this module, corresponding to the calculation of the SY and SL 
 """
 
 from config import *
-import sysl_raster_calculations as r_data
+import sysl_raster_calculations as rc
 
 
 # Functions for total watershed rasters:
@@ -55,7 +55,7 @@ def calculate_sdr(tt, beta, path, GT, Proj, Save):
             print("Creating folder: ", path)
             os.makedirs(path)
 
-        r_data.SaveRaster(sdr, sdr_name, GT, Proj)  # Saves array to raster
+        rc.save_raster(sdr, sdr_name, GT, Proj)  # Saves array to raster
 
     return sdr  # Return SDR with the masked cells with 'nan' value
 
@@ -163,7 +163,7 @@ def clipped_sl_mean(SL_path, data, i, k):
     :return: modified 'data' 3D np.array, which will include the mean SL value for the given date (row i)
     """
     # Convert SL raster to array first:
-    sl_clipped_array = r_data.RasterToArray(SL_path)  # Get the masked array
+    sl_clipped_array = rc.raster_to_array(SL_path)  # Get the masked array
     data[k][i][0] = np.nanmean(sl_clipped_array)      # get the array average
 
     return data
@@ -184,7 +184,7 @@ def clipped_sy(SY_path, data, i, k):
             and the clipped SY raster
     """
     # 1. Convert SY raster to array
-    sy_clipped_array = r_data.RasterToArray(SY_path)
+    sy_clipped_array = rc.raster_to_array(SY_path)
     # 2. Calculate Total SY raster:
     clipped_sy_total = calculate_total_sy(sy_clipped_array)
     # 3. Calculate Mean SY value for the raster and save it to the 3D array
