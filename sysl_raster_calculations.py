@@ -5,14 +5,7 @@ from config import *
 
 ## FUNCTIONS TO CHECK INPUT DATA ##
 
-#Function: receives a folder path and checks if the folder exists, if it does not yet exist, it creates the folder and its subfolders
-def CheckFolder(path):
-    if not os.path.exists(path):
-        print("Creating folder: ", path)
-        os.makedirs(path)
-        os.makedirs(path+"\\SL")
-        os.makedirs(path + "\\SY")
-        os.makedirs(path + "\\SY_Total")
+
 
 #FUNCTION receives a list with all the inut raster file PATHS and checks all the input rasters and checks if they have the same cell size, extension and projection.
 # If any raster has different data, an error is generated stating the problem and stops the calculation.
@@ -108,3 +101,42 @@ def RasterToArray(raster_path):
 
     return masked_array
 
+
+# Functions uses gdal direct function to clip a raster to a shape. It receives the original raster to be cut, the name with which to
+# save the new raster (folder location + name) and the cutting shape path (shape)
+def Clip_Raster(original_raster, clipped_raster, shape):
+    # Clip the original raster to the clipping shape
+    # Add the "-config GDALWARP_IGNORE_BAD_CUTLINE YES" in case there is an intersection in the cutting shape for some reason.
+    os.system(
+        "gdalwarp -cutline " + shape + " -crop_to_cutline -dstnodata -9999 -overwrite --config GDALWARP_IGNORE_BAD_CUTLINE YES " + original_raster + " " + clipped_raster)
+
+    # Check if output raster exists:
+    Check_ClippedRaster(clipped_raster,
+                               shape)  # Receives the created clipped raster and the shape name (whole path)
+
+    # If the raster is valid, calculate the statistics
+    os.system("gdalinfo -stats " + clipped_raster)
+
+#Functions receives an array to save, and the path in which to save the file. It also receies the GeoTransform and Projections of output raster
+def SaveRaster(array, output_path,  GT, Proj):
+    #Step 1: Get drivers in order to save outputs as raster .tif files
+    driver = gdal.GetDriverByName("GTiff")  # Get Driver and save it to variable
+    driver.Register()  # Register driver variable
+
+    # #Step 2: Create the raster files to save, with all the data: folder + name, number of columns (x), number of rows (y), No. of bands, output data type (gdal type)
+    outrs = driver.Create(output_path, xsize=array.shape[1], ysize=array.shape[0], bands=1, eType=gdal.GDT_Float32)
+
+    #Step 3: Assign raster data and assaign the array to the raster
+    outrs.SetGeoTransform(GT)  # assign geo transform data from the original input raster (same size)
+    outrs.SetProjection(Proj)  # assign projection to raster from original input raster (same projection)
+    outband = outrs.GetRasterBand(1)  # Create a band in which to input our array into
+    outband.WriteArray(array)  # Read array into band
+    outband.SetNoDataValue(np.nan)  # Set no data value as Numpy nan
+    outband.ComputeStatistics(0) #Set the raster statistics to the output raster
+
+    #Step 4: Save raster to folder
+    outband.FlushCache()
+    outband = None
+    outrs = None
+
+    print("Saved raster: ", os.path.basename(output_path))

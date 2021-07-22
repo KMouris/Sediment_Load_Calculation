@@ -56,7 +56,7 @@ def calculate_sdr(tt, beta, path, GT, Proj, Save):
             print("Creating folder: ", path)
             os.makedirs(path)
 
-        r_save.SaveRaster(sdr, sdr_name, GT, Proj)  # Saves array to raster
+        r_data.SaveRaster(sdr, sdr_name, GT, Proj)  # Saves array to raster
 
     return sdr  # Return SDR with the masked cells with 'nan' value
 
@@ -147,24 +147,6 @@ def calculate_bl(sy, dates):
     bl = bl_rate / 1000 * sec_month
 
     return bl
-
-
-##FUNCTIONS USED BY CLIPPED RASTERS##
-
-# Functions uses gdal direct function to clip a raster to a shape. It receives the original raster to be cut, the name with which to
-# save the new raster (folder location + name) and the cutting shape path (shape)
-def Clip_Raster(original_raster, clipped_raster, shape):
-    # Clip the original raster to the clipping shape
-    # Add the "-config GDALWARP_IGNORE_BAD_CUTLINE YES" in case there is an intersection in the cutting shape for some reason.
-    os.system(
-        "gdalwarp -cutline " + shape + " -crop_to_cutline -dstnodata -9999 -overwrite --config GDALWARP_IGNORE_BAD_CUTLINE YES " + original_raster + " " + clipped_raster)
-
-    # Check if output raster exists:
-    r_data.Check_ClippedRaster(clipped_raster,
-                               shape)  # Receives the created clipped raster and the shape name (whole path)
-
-    # If the raster is valid, calculate the statistics
-    os.system("gdalinfo -stats " + clipped_raster)
 
 
 # Function calculates the mean for the clipped SL raster
