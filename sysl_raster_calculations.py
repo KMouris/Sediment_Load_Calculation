@@ -17,8 +17,8 @@ def check_input_rasters(list_rasters, input_area):
     is returned, to serve as the default data for rasters to be created.
 
     Args:
-    :param list_rasters: list with all raster data paths to check and compare
-    :param input_area: float with the area of each cell (in ha), which was set by the user.
+    :param list_rasters: list, with all raster data paths to check and compare
+    :param input_area: float, with the area of each cell (in ha), which was set by the user.
 
     :return: 2 tuples, one for the GEOTransform and one for the projection for the RFactor_REM_db raster file.
 
@@ -83,8 +83,6 @@ def check_clipped_raster(raster_path, shape_name):
     :param raster_path: path of clipped raster file (including name.tif)
     :param shape_name: path of shapefile with which the raster_path raster was clipped.
 
-    :return: ---
-
     Note: function generates an ERROR if the input raster file has no valid data. Additionally, it eliminates the empty
     clipped raster and the folder generated for it.
     """
@@ -109,19 +107,22 @@ def check_clipped_raster(raster_path, shape_name):
 
 def get_raster_data(raster_path):
     """
-        Function extracts only the GEOTransform and projection from a raster file
+        Function extracts the GEOTransform and projection from a raster file
 
         Args:
         :param raster_path: raster file path, including name.tif
 
         :return: 2 tuples, one with the GEOTransform and one with the projection
         """
-    raster = gdal.Open(raster_path)  # Extract raster from path
-    gt = raster.GetGeoTransform()    # Get Geotransform Data: Coordinate left upper corner, cellsize, 0, Coord.
-    #                                  Lower right corner, 0, cell size
-    proj = raster.GetProjection()    # Get projection of raster
-
-    return gt, proj
+    try:
+        raster = gdal.Open(raster_path)  # Extract raster from path
+        gt = raster.GetGeoTransform()    # Get GEOTransform Data: coordinate left upper corner, cell size, 0, coord.
+        #                                  lower right corner, 0, cell size
+        proj = raster.GetProjection()    # Get projection of raster
+    except AttributeError:
+        print("The input file " + raster_path + " is not a valid raster file or does not exist.")
+    else:
+        return gt, proj
 
 
 def create_masked_array(array, no_data):
@@ -170,8 +171,6 @@ def clip_raster(original_raster, clipped_path, shape_path):
     :param clipped_path: file path (including extension and name) where to save the clipped raster
     :param shape_path: file path (including extension and name) where to save the clipped raster
 
-    :return:
-
     Note: the argument '-config GDALWARP_IGNORE_BAD_CUTLINE YES' is added to the gdal line to avoid errors due to
     intersection lines.
     """
@@ -197,8 +196,6 @@ def save_raster(array, output_path,  GT, proj):
     :param output_path: file path (with nam and extension) with which to save raster array
     :param GT: geotransform of resulting raster
     :param proj: projection for resulting raster
-
-    :return: ---
         """
     # 1: Get drivers in order to save outputs as raster .tif files
     driver = gdal.GetDriverByName("GTiff")  # Get Driver and save it to variable

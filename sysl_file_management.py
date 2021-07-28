@@ -15,11 +15,11 @@ def get_date(file_path):
     format
 
     Args:
-    :param file_path: file or folder path, string or integer number, from which the date will be extracted
+    :param file_path: string file or folder path, string or integer number, from which the date will be extracted
 
-    :return: file/string date in datetime format
+    :return: file/string, date in datetime format
 
-    If an unsupported date format is found, the function will generate an error and exit the program.
+    Note: If an unsupported date format is found, the function will generate an error and exit the program.
     """
     if not isinstance(file_path, str):
         file_path = str(file_path)
@@ -72,12 +72,10 @@ def get_date(file_path):
 def check_folder(path):
     """
     Function checks if a folder, in which the data for a given watershed will be saved, exists and, if it doesn't, it
-     creates it, along with the sub-folders in which to save the soil loss (SL) sediment yield (SY) and total SY.
+    creates it, along with the sub-folders in which to save the soil loss (SL) sediment yield (SY) and total SY.
 
      Args:
     :param path: path of folder to check for
-
-    :return: ---
     """
     if not os.path.exists(path):
         print("Creating folder: ", path)
@@ -92,10 +90,10 @@ def filter_raster_lists(raster_list, date1, date2, file_name):
     Function filters input list to only include files with within a given data range (date1-date2; analysis range).
 
     Args:
-    :param raster_list: list with file paths, whose names contain the date in either YYYYMM or YYMM format
-    :param date1: analysis start date (in datetime format)
-    :param date2: analysis end date (in datetime format)
-    :param file_name: string with the name of the input raster file type generating the error
+    :param raster_list: list, with file paths, whose names contain the date in either YYYYMM or YYMM format
+    :param date1: datetime variable, analysis start date (in datetime format)
+    :param date2: datetime variable, analysis end date (in datetime format)
+    :param file_name: string, with the name of the input raster file type generating the error
 
     :return: filtered list, without the files that are not within the analysis date range.
 
@@ -127,14 +125,14 @@ def filter_raster_lists(raster_list, date1, date2, file_name):
 
 def save_summary_table(TDA, k, dates, save_path):
     """
-    Function saves the data from a numpy array into a .txt file. The data in the np.array corresponds to the summary
-    data (mean SL, mean SY, total SY, and bed load (optional) for each month.
+    Function saves the data from a numpy array into a .txt file. The data in the 3D np.array corresponds to the summary
+    data (mean SL, mean SY, total SY, and bed load (optional)) for each month.
 
     Args:
-    :param TDA: 3D np.array
-    :param k: the array from the 3D array to save for (which corresponds to a given watershed)
-    :param dates: np.array with the date for each analyzed month (in string YYYYMM format)
-    :param save_path: file path (including name.txt) with which to save resulting table
+    :param TDA: 3D np.array where results are saved.
+    :param k: int, the array from the 3D array to save for (which corresponds to a given watershed)
+    :param dates: np.array, with the date for each analyzed month (in string YYYYMM format)
+    :param save_path: string, file path (including name.txt) with which to save resulting table
 
     Note: The function first transforms the 3D np.array to a 2D array, and then converts it to a data frame and joins it
     with the df for the dates. It then saves the combined data frame to a .txt file

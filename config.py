@@ -33,26 +33,26 @@ except ModuleNotFoundError as b:
 
 * Input rasters: ---------------------------------------------------------------------------------------------------
     *All rasters must have the same extent, cell size (resolution) 
-- cp_path: path for the land cover factor raster (.tif format)
-- k_path: path for the soil erodibility factor (.tif format)
-- ls_path: path for the slope length and steepness factor (.tif format)
-- p_path: path for the support practice factor (.tif format)
-- tt_path: path for the travel time raster (.tif format)
+- cp_path: string, path for the land cover factor raster (.tif format)
+- k_path: string, string path for the soil erodibility factor (.tif format)
+- ls_path: string, path for the slope length and steepness factor (.tif format)
+- p_path: string, path for the support practice factor (.tif format)
+- tt_path: string, path for the travel time raster (.tif format)
 
 * RFactor rasters ---------------------------------------------------------------------------------------------------
     *Folder where the 'monthly' RFactor rasters (in .tif) format are located. There should be one raster for each month
     to be analyzed. The file name must include the year-month of the raster data in the format YYYYMM
-- R_folder: folder path with .tif files 
+- R_folder: string, folder path with .tif files 
 
 * Clipping shapes: -------------------------------------------------------------------------------------------------
     *files must be in *.shp format and have the same projection as the input rasters. 
     *Each file name must be in the format Catchment_NAME.shp
     *All .shp files in the input folder will be used to clip the results and generate result tables
-- clip_path: Folder path with *.shp files, which correspond to the shape files for different catchment areas,  with 
-             which to clip the result rasters. 
+- clip_path: string, folder path with *.shp files, which correspond to the shape files for different catchment areas, 
+             with which to clip the result rasters. 
               
 * Results folder ---------------------------------------------------------------------------------------------------*
-- results_path: FOLDER path where to save the resulting SY, SL, and Total SL results for each catchment. 
+- results_path: path,  string, path where to save the resulting SY, SL, and Total SL results for each catchment. 
 
 * Calculation constants ---------------------------------------------------------------------------------------------
 - beta: float, coefficient which was calibrated for the catchment (see Ferro and Porto (2000))
@@ -76,7 +76,7 @@ R_folder = r'Y:\Abt1\hiwi\Oreamuno\SY_062016_082019\Calculations\Python_Programs
 
 # Clipping shape:
 # clip_path = r'P:\aktiv\2018_DLR_DIRT-X\300_Modelling\310_Models\01_Erosion_model\18_SY_052016_042018\Shape'
-clip_path = r'Y:\Abt1\hiwi\Oreamuno\SY_062016_082019\Clipping_Shapes'
+clip_path = r'Y:\Abt1\hiwi\Oreamuno\SY_062016_082019\Clipping_Shapess'
 
 # Results:
 # results_path = r'P:\aktiv\2018_DLR_DIRT-X\300_Modelling\310_Models\01_Erosion_model\18_SY_052016_042018\Results\Rain_only'

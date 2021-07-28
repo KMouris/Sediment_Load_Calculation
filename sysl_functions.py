@@ -28,7 +28,7 @@ import sysl_raster_calculations as rc
 
 # Functions for total watershed rasters:
 
-def calculate_sdr(tt, beta, path, GT, Proj, Save):
+def calculate_sdr(tt, beta, path, gt, proj, save):
     """
     Function calculates the sediment delivery ratio (SDR) data for each cell, based on the travel time data and beta
     value. The equations are based on the SEDD model by Ferro and Porto (2000)
@@ -37,16 +37,16 @@ def calculate_sdr(tt, beta, path, GT, Proj, Save):
     :param tt: np.array with data from travel time raster
     :param beta: float value for beta coefficient, which was obtained from calibration.
     :param path: file path (including name.tif) with which to save the SDR data values.
-    :param GT: tuple with GEOTransform data with which to save resulting raster
-    :param Proj: tuple with projection data with which to save the resulting raster
-    :param Save: boolean, when True saves the SDR data to a .tif raster.
+    :param gt: tuple with GEOTransform data with which to save resulting raster
+    :param proj: tuple with projection data with which to save the resulting raster
+    :param save: boolean, when True saves the SDR data to a .tif raster.
 
     :return: np.array with SDR values
     """
-    sdr = np.exp(tt * (-beta))  # SDR operation
+    sdr = np.exp(tt * (-beta))
     sdr = np.where(sdr.mask == True, np.nan, sdr)  # Convert all masked cells to np.nan values
 
-    if Save:
+    if save:
         # Save SDR to folder:
         path = path + "\SDR"  # Create Folder path
         sdr_name = path + "\SDR.tif"  # Create file name
@@ -55,9 +55,8 @@ def calculate_sdr(tt, beta, path, GT, Proj, Save):
             print("Creating folder: ", path)
             os.makedirs(path)
 
-        rc.save_raster(sdr, sdr_name, GT, Proj)  # Saves array to raster
-
-    return sdr  # Return SDR with the masked cells with 'nan' value
+        rc.save_raster(sdr, sdr_name, gt, proj)  # Saves array to raster
+    return sdr
 
 
 def calculate_sl(R, C, K, P, LS):
@@ -65,11 +64,11 @@ def calculate_sl(R, C, K, P, LS):
     Function calculates soil loss (ton/ha*month) based on the RUSLE model by Renard et al (1997)
 
     Args:
-    :param R: np.array with monthly R(ain) factor values
-    :param C: np.array with land C(over) factor values
-    :param K: np.array with soil erodibility factor
-    :param P: np.array with support P(ractice) factor
-    :param LS: np.array with L(ength) and S(lope) factor
+    :param R: np.array, with monthly R(ain) factor values
+    :param C: np.array, with land C(over) factor values
+    :param K: np.array, with soil erodibility factor
+    :param P: np.array, with support P(ractice) factor
+    :param LS: np.array, with L(ength) and S(lope) factor
 
     :return: np.array with sediment loss values
 
@@ -92,9 +91,9 @@ def calculate_sy(SL, SDR, cell_area):
     Function calculates the sediment yield (ton/month) for each cell in the input rasters.
 
     Args:
-    :param SL: np.array with soil loss data
-    :param SDR: np.array with sediment delivery ratio values
-    :param cell_area: float with the area of each cell, in ha.
+    :param SL: np.array, with soil loss data
+    :param SDR: np.array, with sediment delivery ratio values
+    :param cell_area: float, with the area of each cell, in ha.
 
     :return: np.array with sediment yield values
     """
@@ -110,12 +109,12 @@ def calculate_total_sy(SY):
     cells). Generates an np.array where each value cell has the same value, equivalent to the total SY value.
 
     Args:
-    :param SY: np.array with sediment yield data values
+    :param SY: np.array, with sediment yield data values
 
-    :return: np.array with each cell containing the total SY value
+    :return: np.array, with each cell containing the total SY value
     """
     sum_sy = np.nansum(SY)
-    sy_tot = np.ma.where(SY >= 0, sum_sy, np.nan)  # For all cells with values, assign the value "sum"
+    sy_tot = np.ma.where(SY >= 0, sum_sy, np.nan)
 
     return sy_tot
 
@@ -155,30 +154,30 @@ def clipped_sl_mean(SL_path, data, i, k):
     Function calculates the mean for the clipped soil loss (SL) raster data
 
     Args:
-    :param SL_path: path for the clipped soil loss raster
-    :param data: 3D np.array where the summary results for the given watershed are to be stored
-    :param i: int with the row value to fill
-    :param k: int with the array (in the 3D array) to be filled
+    :param SL_path: string, path for the clipped soil loss raster
+    :param data: 3D np.array, where the summary results for the given watershed are to be stored
+    :param i: int, with the row value to fill
+    :param k: int, with the array (in the 3D array) to be filled
 
     :return: modified 'data' 3D np.array, which will include the mean SL value for the given date (row i)
     """
     # Convert SL raster to array first:
     sl_clipped_array = rc.raster_to_array(SL_path)  # Get the masked array
-    data[k][i][0] = np.nanmean(sl_clipped_array)      # get the array average
+    data[k][i][0] = np.nanmean(sl_clipped_array)  # get the array average
 
     return data
 
 
 def clipped_sy(SY_path, data, i, k):
     """
-    Function calculates the mean and total sediment yield (SY) for a given clipped raster and saved it to a 3D array,
+    Function calculates the mean and total sediment yield (SY) for a given clipped raster and saves it to a 3D array,
     which contains the summary data for the given watershed.
 
     Args:
-    :param SY_path: path of clipped SY raster to extract data from
-    :param data: 3D np.array where the summary results for the given watershed are to be stored
-    :param i: int with the row value to fill
-    :param k: int with the array (in the 3D array) to be filled
+    :param SY_path: string, path of clipped SY raster to extract data from
+    :param data: 3D np.array, where the summary results for the given watershed are to be stored
+    :param i: int, with the row value to fill
+    :param k: int, with the array (in the 3D array) to be filled
 
     :return: modified 'data' 3D np.array, which will include the mean SY and total SY values for the given date (row i)
             and the clipped SY raster
