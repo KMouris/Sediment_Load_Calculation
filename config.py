@@ -27,8 +27,9 @@ except ModuleNotFoundError as b:
 
 """ Input variable description: 
 * Decision variables -----------------------------------------------------------------------------------------------
-- start_date, end_date: strings or integers, in yyyymm (YearMonth) format, which determine the range of dates to analyze
-                        for. If they are the same, only said month will be analyzed. 
+- start_date, end_date: strings or integers, in yyyymm (YearMonth) format, which determine the range of dates to 
+                        analyze for. If they are the same, only said month will be analyzed. 
+- calc_bed_load: boolean, if True then the bed load is calculated and added to the results table for each catchment. 
 
 * Input rasters: ---------------------------------------------------------------------------------------------------
     *All rasters must have the same extent, cell size (resolution) 
@@ -60,6 +61,7 @@ except ModuleNotFoundError as b:
 # Dates
 start_date = '201711'
 end_date = '201802'
+calc_bed_load = True
 
 # Import input rasters:
 cp_path = r'Y:\Abt1\hiwi\Oreamuno\SY_062016_082019\Rasters\Cp_Mean_snap.tif'

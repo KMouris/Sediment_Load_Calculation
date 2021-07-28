@@ -134,28 +134,32 @@ def save_summary_table(TDA, k, dates, save_path):
     :param TDA: 3D np.array
     :param k: the array from the 3D array to save for (which corresponds to a given watershed)
     :param dates: np.array with the date for each analyzed month (in string YYYYMM format)
-    :param save_path: file path (including name.txt) with which to save resulting tabe
-
-    :return: ---
+    :param save_path: file path (including name.txt) with which to save resulting table
 
     Note: The function first transforms the 3D np.array to a 2D array, and then converts it to a data frame and joins it
     with the df for the dates. It then saves the combined data frame to a .txt file
     """
-    # 1. Extract the "k" array from the 3D array and convert it to a 2D array
+    # Extract the "k" array from the 3D array and convert it to a 2D array
     data = TDA[k, :, :]
     data = np.reshape(data, (int(TDA.shape[1]), int(TDA.shape[2])))
 
-    # 2. Generate individual Data Frames
-    columns = ["Mean Soil Loss [ton/ha*month]", "Mean Sediment Yield [ton/month]", 'Total Sediment Yield [ton/month]',
-               'Bed Load [ton/month]']
+    # Set column names:
     column_date = ['Date']
-    #   2.1 Generate Data Frame with data values
+    if calc_bed_load:
+        columns = ["Mean Soil Loss [ton/ha*month]", "Mean Sediment Yield [ton/month]",
+                   'Total Sediment Yield [ton/month]',
+                   'Bed Load [ton/month]']
+    else:
+        columns = ["Mean Soil Loss [ton/ha*month]", "Mean Sediment Yield [ton/month]",
+                   'Total Sediment Yield [ton/month]']
+
+    # Generate data frame with data values
     df = pd.DataFrame(data=data, index=None, columns=columns)
-    #   2.2 Generate Data Frame with dates:
+    # Generate data frame with dates:
     df_dates = pd.DataFrame(data=dates, index=None, columns=column_date)
-    #   2.3 Generate Final Table by joining Dates and the value data frames:
+    # Generate final df by joining dates and the value data frames:
     results = pd.concat([df_dates, df], axis=1)
 
-    # 3. Save the final Data frame to a .txt file:
+    # Save the final Data frame to a .txt file:
     results.to_csv(save_path, index=False, sep='\t', na_rep="")
     print("Summary table saved: ", save_path)
