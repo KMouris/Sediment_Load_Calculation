@@ -14,13 +14,15 @@ def get_date(file_path):
     Function extracts the date from the input file/folder name. The date should be in YYYYMM, YYYYMMDD, or YYYYMMDD0HH
     format
 
-    Parameters: --------
-    :param file_path: file or folder path
+    Args:
+    :param file_path: file or folder path, string or integer number, from which the date will be extracted
 
-    :return: file date in datetime format
+    :return: file/string date in datetime format
 
     If an unsupported date format is found, the function will generate an error and exit the program.
     """
+    if not isinstance(file_path, str):
+        file_path = str(file_path)
     file_name = os.path.basename(file_path)  # Get file name (which should contain the date)
     digits = ''.join(re.findall(r'\d+', file_name))  # Combine all digits to a string (removes any integer)
 
@@ -83,6 +85,44 @@ def check_folder(path):
         os.makedirs(path+"\\SL")
         os.makedirs(path + "\\SY")
         os.makedirs(path + "\\SY_Total")
+
+
+def filter_raster_lists(raster_list, date1, date2, file_name):
+    """
+    Function filters input list to only include files with within a given data range (date1-date2; analysis range).
+
+    Args:
+    :param raster_list: list with file paths, whose names contain the date in either YYYYMM or YYMM format
+    :param date1: analysis start date (in datetime format)
+    :param date2: analysis end date (in datetime format)
+    :param file_name: string with the name of the input raster file type generating the error
+
+    :return: filtered list, without the files that are not within the analysis date range.
+
+    Note: If there are no files for the given date range (new_list is empty) or any month is missing, function throws
+    an error and exits the program.
+    """
+    new_list = []
+    for elem in raster_list:
+        date = get_date(elem)
+        if date1 <= date <= date2:
+            new_list.append(elem)
+
+    if len(new_list) == 0:
+        message = "ERROR: There are no {} input raster files corresponding to the input date range. Check input.".format(file_name)
+        sys.exit(message)
+
+    # Check if there is one input file per month to analyze
+    n_months = (date2.year - date1.year) * 12 + date2.month - date1.month + 1  # months to analyze
+    n_days = (date2.replace(day=calendar.monthrange(date2.year, date2.month)[1]) - date1).days + 1
+    n_hours = n_days * 24
+    if not n_months == len(new_list) and not n_days == len(new_list) and not n_hours == len(new_list):
+        message = "ERROR: One or more of the raster files between {} and {} is missing from {} input files.".format(
+            str(date1.strftime('%Y%m')), str(date2.strftime('%Y%m')), file_name) + \
+                                         " Check input rasters for missing date(s) or check date range."
+        sys.exit(message)
+
+    return new_list
 
 
 def save_summary_table(TDA, k, dates, save_path):

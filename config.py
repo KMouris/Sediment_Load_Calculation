@@ -9,9 +9,10 @@ try:
     import datetime
     import re
     import shutil
+    import calendar
     from calendar import monthrange
 except ModuleNotFoundError as b:
-    print('ModuleNotFoundError: Missing basic libraries (required: glob, os, sys, time')
+    print('ModuleNotFoundError: Missing basic libraries (required: glob, os, sys, time, datetime, re, shutil, calendar')
     print(b)
 
 # import additional python libraries
@@ -25,6 +26,9 @@ except ModuleNotFoundError as b:
 
 
 """ Input variable description: 
+* Decision variables -----------------------------------------------------------------------------------------------
+- start_date, end_date: strings or integers, in yyyymm (YearMonth) format, which determine the range of dates to analyze
+                        for. If they are the same, only said month will be analyzed. 
 
 * Input rasters: ---------------------------------------------------------------------------------------------------
     *All rasters must have the same extent, cell size (resolution) 
@@ -53,6 +57,9 @@ except ModuleNotFoundError as b:
 - beta: float, coefficient which was calibrated for the catchment (see Ferro and Porto (2000))
 - cell_area = float, area of a single raster cell (in ha)
 """
+# Dates
+start_date = '201711'
+end_date = '201802'
 
 # Import input rasters:
 cp_path = r'Y:\Abt1\hiwi\Oreamuno\SY_062016_082019\Rasters\Cp_Mean_snap.tif'
@@ -63,7 +70,7 @@ tt_path = r'Y:\Abt1\hiwi\Oreamuno\SY_062016_082019\Rasters\traveltime_final_h_sn
 
 # Rfactor rasters:
 # R_folder = r'Y:\Abt1\hiwi\Oreamuno\Tasks\Snow_Codes\Modifications_MF\Results\R_factor_REM_db'
-R_folder = r'Y:\Abt1\hiwi\Oreamuno\SY_062016_082019\Calculations\Python_Programs\Results\RFactor_REM_db\Non-CorrectedData\Test'
+R_folder = r'Y:\Abt1\hiwi\Oreamuno\SY_062016_082019\Calculations\Python_Programs\Results\RFactor_REM_db\Non-CorrectedData'
 
 # Clipping shape:
 # clip_path = r'P:\aktiv\2018_DLR_DIRT-X\300_Modelling\310_Models\01_Erosion_model\18_SY_052016_042018\Shape'

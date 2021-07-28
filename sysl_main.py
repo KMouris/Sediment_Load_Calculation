@@ -36,36 +36,38 @@ import sysl_file_management as fm
 # -------------------------------------------------------------------------------------------------------------------#
 start_time = start_time = time.time()
 
-# 1.Get all R raster file paths into a list: All rasters MUST BE .tif files. if not, the type of file must also be
-#   changed.
-R_filenames = sorted(glob.glob(R_folder + "\*.tif"))
-# print(R_filenames)
+# 1. Set the date ranges to analyze for:
+start_date = fm.get_date(start_date)
+end_date = fm.get_date(end_date)
 
-# 2. Get all shapes into a list
+# 2. Get all R raster .tif file paths into a list. The list is then filtered to only include the dates within the input
+# data range.
+R_filenames = sorted(glob.glob(R_folder + "\*.tif"))
+R_filenames = fm.filter_raster_lists(R_filenames, start_date, end_date, "Rfactor")
+
+# 3. Get all shapes into a list
 clip_filenames = glob.glob(clip_path + "\*.shp")
 # print(Clip_filenames)
 
-# 3. Check input raster properties: save all raster input paths into list, including 1 R factor file
-#   If more input files are used, they must be added AT THE END of the list
-#   If all rasters have the same data properties, the function assigns the default projection and GEOTransform for the
-#   total watershed rasters.
+# 4. Check input raster properties and get raster properties:
+# If more input files are used, they must be added AT THE END of the list.
 raster_list = [R_filenames[0], cp_path, k_path, ls_path, p_path, tt_path]
 gt, proj = rc.check_input_rasters(raster_list, cell_area)
 
-# 4. Save each constant into an array: if more input rasters are used, add them here with a corresponding array name
-#    factor_array
+# 5. Save each constant into an array: if more input rasters are used, add them here with a corresponding array name
+# factor_array
 cp_array = rc.raster_to_array(cp_path)  # Array with C factor values
 k_array = rc.raster_to_array(k_path)  # Array with K factor values
 p_array = rc.raster_to_array(p_path)  # Array with P factor values
 ls_array = rc.raster_to_array(ls_path)  # Array with LS factor values
 tt_array = rc.raster_to_array(tt_path)  # Array with transport time values
 
-# 5. Get SDR raster, which is independent of R factor and thus constant. The function also saves the SDR, if last input
-#    value is set to "True"
+# 6. Get SDR raster, which is independent of R factor and thus constant. The function also saves the SDR, if last input
+# value is set to "True"
 SDR_array = r_calc.calculate_sdr(tt_array, beta, results_path, gt, proj, True)
 
-# 6. Create 3D array to save the results to a .txt file and a vector to save the dates
-#    Num. Arrays: 1 for each shape file + total, num. rows: months to analyze, columns: 4 (one for each result)
+# 7. Create 3D array to save the results to a .txt file and a vector to save the dates
+# Num. Arrays: 1 for each shape file + total, num. rows: months to analyze, columns: 4 (one for each result)
 data_summary = np.empty((len(clip_filenames) + 1, len(R_filenames), 4))
 dates_vector = np.full((len(R_filenames), 1), "", dtype=object)
 # print("3D shape: ", data_summary.shape)
