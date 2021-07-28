@@ -35,7 +35,7 @@ def calculate_sdr(tt, beta, path, GT, Proj, Save):
 
     Args:
     :param tt: np.array with data from travel time raster
-    :param beta: float value for beta, which was obtained from calibration. Value must be negative.
+    :param beta: float value for beta coefficient, which was obtained from calibration.
     :param path: file path (including name.tif) with which to save the SDR data values.
     :param GT: tuple with GEOTransform data with which to save resulting raster
     :param Proj: tuple with projection data with which to save the resulting raster
@@ -43,7 +43,7 @@ def calculate_sdr(tt, beta, path, GT, Proj, Save):
 
     :return: np.array with SDR values
     """
-    sdr = np.exp(tt * beta)  # SDR operation
+    sdr = np.exp(tt * (-beta))  # SDR operation
     sdr = np.where(sdr.mask == True, np.nan, sdr)  # Convert all masked cells to np.nan values
 
     if Save:
