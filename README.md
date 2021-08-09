@@ -1,7 +1,14 @@
-# Sediment load calculation based on RUSLE and SEDD
+# Sediment load, yield and soil loss calculation based on RUSLE and SEDD
 
 # Introduction
-Model chain to compute sediment loads using RUSLE and the SEDD model
+
+The module calculates the monthly pixel-specific soil loss (SL), the monthly pixel-specific sediment yield (SY) and the 
+total monthly sediment yield for each sub-catchment based on the revised universal soil loss equation (RUSLE), using the
+SEDD model to estimate the sediment delivery. The sediment yield is defined as the sediment mass per unit time or 
+sediment load that passes a defined boundary, such as the outlet of a sub-catchment. 
+The bedload can be optionally guesstimated as a function the suspended sediment transport rate. In this case the model 
+needs to be calibrated to the observed suspended sediment loads. 
+
 
 ## Libraries
 
@@ -32,7 +39,20 @@ The following input variables must be specified to run the code:
 |`ls_path`| STRING | path for the slope length and steepness factor (.tif format)  |
 |`p_path`| STRING | path for the support practice factor (.tif format)  |
 |`tt_path`| STRING | path for the travel time raster (.tif format)  |
-|`R_folder`| STRING | path to the 'monthly' R factor rasters (.tif, date information must be included in the format YYYYMM)  |
+|`r_folder`| STRING | path to the 'monthly' R factor rasters (.tif, date information must be included in the format YYYYMM)  |
 |`clip_path`| STRING | path to the subcatchment shapes (format: Catchment_NAME.shp  |
 
-Note: All raster files must have the same extent and pixel size (resolution).
+Please note: All raster files must have the same extent and pixel size (resolution).
+
+**Result folder:** 
+The output files for each sub-catchment as well as for the total catchment area are written to separate subfolders. 
+These subfolders contain the monthly pixel-specific soil loss (`SL_YYYYMMM_Catchmentname.tif`), the monthly pixel-specific 
+sediment yield (`SY_YYYYMMM_Name.tif`) and the total total monthly sediment yield for each sub-catchment 
+(`SYTot_YYYYMMM_Catchmentname.tif`). 
+For a clear presentation, an additional table is created for each subcatchment (`Catchmentname.txt`) showing the mean soil erosion, 
+the mean sediment yield, and the sediment load or total sediment yield within the respective month. 
+The bedload fraction can be optionally computed and written to the output table using an empirical equation.
+
+Please note:
+If observed suspended loads were used for calibration, the sediment yield represents the suspended sediment yield 
+excluding bed load.

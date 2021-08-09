@@ -1,29 +1,34 @@
 """
 @author: María Fernanda Morales Oreamuno
 
-Module calculates the monthly  soil loss (SL), the pixel-specific sediment yield (SY) and total sediment yield for
-each subcatchment based on the revised universal soil loss equation (RUSLE), using the SEDD model to estimate the
-sediment delivery.
+The module calculates the monthly pixel-specific soil loss (SL), the pixel-specific sediment yield (SY) and the total
+sediment yield for each sub-catchment based on the revised universal soil loss equation (RUSLE), using the SEDD model
+to estimate the sediment delivery. The bedload can be optionally guesstimated as a function the suspended sediment
+transport rate.
 
 Procedure based on:
 
-    Renard, K. G. (1997). Predicting soil erosion by water: a guide to conservation planning with the Revised Universal
-    Soil Loss Equation (RUSLE). United States Government Printing.
-
-    Ferro, V.; Porto, P. Sediment delivery distributed (SEDD) model. J. Hydrol. Eng. 2000, 5, 411–422.
-    DOI: https://doi.org/10.1061/(ASCE)1084-0699(2000)5:4(411)
+    Renard, K.G., Foster, G.R., Weesies, G.A., Porter, J.P., 1991. RUSLE: Revised universal soil loss equation. J. Soil
+    Water Conserv. 46 (1), 30–33.
 
     Renard, K. et al. 1997. Predicting Soil Erosion by Water: A Guide to Conservation Planning
     with the Revised Universal Soil Loss Equation (RUSLE). s.l. : Agricultural Handbook 703, USDA-ARS, 1997
+
+    Ferro, V., Porto, P., 2000. Sediment Delivery Distributed (SEDD) Model. Journal of Hydrologic Engineering 5,
+    411–422. https://doi.org/10.1061/(ASCE)1084-0699(2000)5:4(411)
+
+    Turowski, J.M., Rickenmann, D., Dadson, S.J., 2010. The partitioning of the total sediment load of a river into
+    suspended load and bedload: a review of empirical data: The partitioning of sediment load. Sedimentology 57,
+    1126–1146. https://doi.org/10.1111/j.1365-3091.2009.01140.x
 
 Needed information:
 - See config.py file
 
 Notes:
 * Module first calculates the SL, SY and Total SY rasters for the entire extent of the input rasters (considered as
-    the total watershed) and then clips them to the extent of each of the rest of the input shape files.
-* Module generates a summary table with the mean SL, mean SY and total SY for each of sub-catchments, including the
-    total catchment. Each summary table contains the data for each of the months within the analysis period.
+    the total catchment) and then clips them to the subcatchments extent.
+* Module generates a summary table with the mean SL, mean SY and total SY for each sub-catchment, including the
+    total catchment. Each summary table contains monthly results within the analysis period.
 * Module calculates bed load based on the total SY (if corresponding user input calc_bed_load is True) and adds result
     to the resulting summary table.
 """
@@ -44,7 +49,7 @@ end_date = fm.get_date(end_date)
 
 # Get all R raster .tif file paths into a list. The list is then filtered to only include the dates within the input
 # data range.
-R_filenames = sorted(glob.glob(R_folder + "\*.tif"))
+R_filenames = sorted(glob.glob(r_folder + "\*.tif"))
 R_filenames = fm.filter_raster_lists(R_filenames, start_date, end_date, "Rfactor")
 
 # Get all shapes into a list
