@@ -1,7 +1,7 @@
 """
 @author: María Fernanda Morales Oreamuno
 
-Module calculates the monthly  soil loss (SL), the cell-specific sediment yield (SY) and total sediment yield for
+Module calculates the monthly  soil loss (SL), the pixel-specific sediment yield (SY) and total sediment yield for
 each subcatchment based on the revised universal soil loss equation (RUSLE), using the SEDD model to estimate the
 sediment delivery.
 
@@ -54,7 +54,7 @@ clip_filenames = glob.glob(clip_path + "\*.shp")
 # Check input raster properties and get raster properties:
 # If more input files are used, they must be added AT THE END of the list.
 raster_list = [R_filenames[0], cp_path, k_path, ls_path, p_path, tt_path]
-gt, proj = rc.check_input_rasters(raster_list, cell_area)
+gt, proj = rc.check_input_rasters(raster_list, pixel_area)
 
 # Save each constant into an array: if more input rasters are used, add them here with a corresponding array name
 # factor_array
@@ -101,7 +101,7 @@ for file in R_filenames:
 
     # Calculate results for each R factor file (soil Loss(SL), sediment yield (SY), total SY)
     sl_array = r_calc.calculate_sl(R_array, cp_array, k_array, p_array, ls_array)
-    sy_array = r_calc.calculate_sy(sl_array, SDR_array, cell_area)
+    sy_array = r_calc.calculate_sy(sl_array, SDR_array, pixel_area)
     sy_tot_array = r_calc.calculate_total_sy(sy_array)
 
     # Save the resulting rasters for the total watershed

@@ -11,21 +11,21 @@ from config import *
 
 def check_input_rasters(list_rasters, input_area):
     """
-    Function checks if all input raster files have the same configuration, including cell resolution, raster extension
+    Function checks if all input raster files have the same configuration, including pixel resolution, raster extension
     and projection. All rasters are compared to the RFactor_REM_db raster, since it comes from the RFactor_REM_db python
     program. If all rasters have the same configuration, the GEOTransform and projection for the Rfactor_REM_db raster
     is returned, to serve as the default data for rasters to be created.
 
     Args:
     :param list_rasters: list, with all raster data paths to check and compare
-    :param input_area: float, with the area of each cell (in ha), which was set by the user.
+    :param input_area: float, with the area of each pixel (in ha), which was set by the user.
 
     :return: 2 tuples, one for the GEOTransform and one for the projection for the RFactor_REM_db raster file.
 
     Note:
-    * The function generates an ERROR if any of the rasters have a different extension and cell resolution and ends the
+    * The function generates an ERROR if any of the rasters have a different extension and pixel resolution and ends the
     program.
-    * If two files have the same extension and cell resolution but different projection, a WARNING is sent and the user
+    * If two files have the same extension and pixel resolution but different projection, a WARNING is sent and the user
     can choose, by introducing a "1" in the comment line to continue the calculations or to end the program to change
     input rasters by introducing a "0".
     * The function assumes the raster projection and GEOTransform data is in meters.
@@ -44,10 +44,10 @@ def check_input_rasters(list_rasters, input_area):
                 message = "The raster " + str(os.path.basename(file)), \
                           " does not have the same extent as the other input rasters. Please check"
                 sys.exit(message)
-            # Check cell size
+            # Check pixel size
             if np.float32(gt_r[1]) != np.float32(gt_new[1]):
                 message = "The raster " + str(os.path.basename(file)), \
-                          " does not have the same cell size as the other input rasters. Please check"
+                          " does not have the same pixel size as the other input rasters. Please check"
                 sys.exit(message)
             # Check projection
             if proj_r != proj_new:
@@ -63,10 +63,10 @@ def check_input_rasters(list_rasters, input_area):
                     sys.exit("Exit program. Check input raster projections.")
         i += 1
 
-    # Check cell resolution and cell area (assuiming input rasters are in meters)
+    # Check pixel resolution and pixel area (assuiming input rasters are in meters)
     real_area = np.float32(gt_r[1]) * np.float32(gt_r[1])
     if real_area/10000 != input_area:  # If the calculated area in ha is different than the user input.
-        message = "The user input area is incorrect. If the cell size is in meters, the cell area should be: " +\
+        message = "The user input area is incorrect. If the pixel size is in meters, the pixel area should be: " +\
                   str(real_area/10000) + " ha."
         sys.exit(message)
 
@@ -76,7 +76,7 @@ def check_input_rasters(list_rasters, input_area):
 def check_clipped_raster(raster_path, shape_name):
     """
     Function checks if the raster, which was clipped to a shape file, has data. If there are no valid pixel data, or all
-    cells are masked, then it means the clipping shape is not within the total watershed and thus no calculations can
+    pixels are masked, then it means the clipping shape is not within the total watershed and thus no calculations can
     be done on it.
 
     Args:
@@ -116,8 +116,8 @@ def get_raster_data(raster_path):
         """
     try:
         raster = gdal.Open(raster_path)  # Extract raster from path
-        gt = raster.GetGeoTransform()    # Get GEOTransform Data: coordinate left upper corner, cell size, 0, coord.
-        #                                  lower right corner, 0, cell size
+        gt = raster.GetGeoTransform()    # Get GEOTransform Data: coordinate left upper corner, pixel size, 0, coord.
+        #                                  lower right corner, 0, pixel size
         proj = raster.GetProjection()    # Get projection of raster
     except AttributeError:
         print("The input file " + raster_path + " is not a valid raster file or does not exist.")

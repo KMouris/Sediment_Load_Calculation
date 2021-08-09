@@ -25,15 +25,15 @@ except ModuleNotFoundError as b:
     print(b)
 
 
-""" Input variable description: 
-* Decision variables -----------------------------------------------------------------------------------------------
-- start_date, end_date: strings or integers, in yyyymm (YearMonth) format, which determine the range of dates to 
-                        analyze for. If they are the same, only said month will be analyzed. 
-- calc_bed_load: boolean, if True then the bed load is calculated and added to the results table for each catchment. 
+"""Input variable description: * Decision variables 
+----------------------------------------------------------------------------------------------- - start_date, 
+end_date: strings, in yyyymm (YearMonth) format, which determine the range of dates to analyze. If they are the same, 
+only one month will be analyzed. - calc_bed_load: boolean, if 'True' then the bed load is calculated and added to the 
+results table for each subcatchment. 
 
 * Input rasters: ---------------------------------------------------------------------------------------------------
-    *All rasters must have the same extent, cell size (resolution) 
-- cp_path: string, path for the land cover factor raster (.tif format)
+    *All rasters must have the same extent, pixel size (resolution) 
+- cp_path: string, path for the land cover factor (.tif format)
 - k_path: string, path for the soil erodibility factor (.tif format)
 - ls_path: string, path for the slope length and steepness factor (.tif format)
 - p_path: string, path for the support practice factor (.tif format)
@@ -56,12 +56,12 @@ except ModuleNotFoundError as b:
 
 * Calculation constants ---------------------------------------------------------------------------------------------
 - beta: float, coefficient which was calibrated for the catchment (see Ferro and Porto (2000))
-- cell_area = float, area of a single raster cell (in ha)
+- pixel_area = float, area of a single raster pixel (in ha)
 """
 # Dates
 start_date = '201710'
 end_date = '201712'
-calc_bed_load = False
+calc_bed_load = True
 
 # Import input rasters:
 cp_path = r'Y:\Abt1\hiwi\Oreamuno\SY_062016_082019\Rasters\Cp_Mean_snap.tif'
@@ -84,5 +84,5 @@ results_path = r'C:\Users\Mouris\Desktop\SY_SL_Calculation_Git\Results'
 
 # Calculation constants:
 beta = 0.5639
-cell_area = 0.0625  # in hectares (ha)
+pixel_area = 0.0625  # in hectares (ha)
 

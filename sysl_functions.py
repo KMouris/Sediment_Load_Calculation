@@ -30,7 +30,7 @@ import sysl_raster_calculations as rc
 
 def calculate_sdr(tt, beta, path, gt, proj, save):
     """
-    Function calculates the sediment delivery ratio (SDR) data for each cell, based on the travel time data and beta
+    Function calculates the sediment delivery ratio (SDR) data for each pixel, based on the travel time data and beta
     value. The equations are based on the SEDD model by Ferro and Porto (2000)
 
     Args:
@@ -44,7 +44,7 @@ def calculate_sdr(tt, beta, path, gt, proj, save):
     :return: np.array with SDR values
     """
     sdr = np.exp(tt * (-beta))
-    sdr = np.where(sdr.mask == True, np.nan, sdr)  # Convert all masked cells to np.nan values
+    sdr = np.where(sdr.mask == True, np.nan, sdr)  # Convert all masked pixels to np.nan values
 
     if save:
         # Save SDR to folder:
@@ -77,8 +77,8 @@ def calculate_sl(R, C, K, P, LS):
     """
     sl = R * C * K * P * LS
 
-    # Convert masked cells to np.nan values
-    sl = sl.filled(np.nan)  # Convert cells which multiplied a masked cell with a value cell (value = "--") to np.nan
+    # Convert masked pixels to np.nan values
+    sl = sl.filled(np.nan)  # Convert pixels which multiplied a masked pixel with a value pixel (value = "--") to np.nan
 
     # Convert possible "inf" values to np.nan
     # SL = np.where(np.isinf(SL), np.nan, SL)  ---Uncomment if any value appears to be "inf"
@@ -86,32 +86,32 @@ def calculate_sl(R, C, K, P, LS):
     return sl
 
 
-def calculate_sy(SL, SDR, cell_area):
+def calculate_sy(SL, SDR, pixel_area):
     """
-    Function calculates the sediment yield (ton/month) for each cell in the input rasters.
+    Function calculates the sediment yield (ton/month) for each pixel in the input rasters.
 
     Args:
     :param SL: np.array, with soil loss data
     :param SDR: np.array, with sediment delivery ratio values
-    :param cell_area: float, with the area of each cell, in ha.
+    :param pixel_area: float, with the area of each pixel, in ha.
 
     :return: np.array with sediment yield values
     """
-    sy = np.multiply(SL, SDR) * cell_area
-    sy = np.where(np.isinf(sy), np.nan, sy)  # Convert 'inf' and masked cells to np.nan
+    sy = np.multiply(SL, SDR) * pixel_area
+    sy = np.where(np.isinf(sy), np.nan, sy)  # Convert 'inf' and masked pixels to np.nan
 
     return sy
 
 
 def calculate_total_sy(SY):
     """
-    Function calculates the total sediment yield for an input SY raster, by adding all value cells (excluding np.nan
-    cells). Generates an np.array where each value cell has the same value, equivalent to the total SY value.
+    Function calculates the total sediment yield for an input SY raster, by adding all value pixels (excluding np.nan
+    pixels). Generates an np.array where each value pixel has the same value, equivalent to the total SY value.
 
     Args:
     :param SY: np.array, with sediment yield data values
 
-    :return: np.array, with each cell containing the total SY value
+    :return: np.array, with each pixel containing the total SY value
     """
     sum_sy = np.nansum(SY)
     sy_tot = np.ma.where(SY >= 0, sum_sy, np.nan)
@@ -189,7 +189,7 @@ def clipped_sy(SY_path, data, i, k):
     # 3. Calculate Mean SY value for the raster and save it to the 3D array
     data[k][i][1] = np.nanmean(sy_clipped_array)
     # 4. Calculate total SY value for the clipped watershed
-    # (which is the same as the mean, since all cells have the same value):
+    # (which is the same as the mean, since all pixels have the same value):
     data[k][i][2] = np.nanmean(clipped_sy_total)
 
     return clipped_sy_total, data
