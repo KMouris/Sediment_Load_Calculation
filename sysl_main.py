@@ -1,8 +1,9 @@
 """
 @author: María Fernanda Morales Oreamuno
 
-Module calculates the monthly  sediment loss (SL), sediment yield (SY) and total sediment yield based on the revised
-universal soil loss equation (RUSLE), using the SEDD model for SY calculations.
+Module calculates the monthly  soil loss (SL), the cell-specific sediment yield (SY) and total sediment yield for
+each subcatchment based on the revised universal soil loss equation (RUSLE), using the SEDD model to estimate the
+sediment delivery.
 
 Procedure based on:
 

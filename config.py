@@ -34,7 +34,7 @@ except ModuleNotFoundError as b:
 * Input rasters: ---------------------------------------------------------------------------------------------------
     *All rasters must have the same extent, cell size (resolution) 
 - cp_path: string, path for the land cover factor raster (.tif format)
-- k_path: string, string path for the soil erodibility factor (.tif format)
+- k_path: string, path for the soil erodibility factor (.tif format)
 - ls_path: string, path for the slope length and steepness factor (.tif format)
 - p_path: string, path for the support practice factor (.tif format)
 - tt_path: string, path for the travel time raster (.tif format)
@@ -59,9 +59,9 @@ except ModuleNotFoundError as b:
 - cell_area = float, area of a single raster cell (in ha)
 """
 # Dates
-start_date = '201711'
-end_date = '201802'
-calc_bed_load = True
+start_date = '201710'
+end_date = '201712'
+calc_bed_load = False
 
 # Import input rasters:
 cp_path = r'Y:\Abt1\hiwi\Oreamuno\SY_062016_082019\Rasters\Cp_Mean_snap.tif'
@@ -76,11 +76,11 @@ R_folder = r'Y:\Abt1\hiwi\Oreamuno\SY_062016_082019\Calculations\Python_Programs
 
 # Clipping shape:
 # clip_path = r'P:\aktiv\2018_DLR_DIRT-X\300_Modelling\310_Models\01_Erosion_model\18_SY_052016_042018\Shape'
-clip_path = r'Y:\Abt1\hiwi\Oreamuno\SY_062016_082019\Clipping_Shapess'
+clip_path = r'Y:\Abt1\hiwi\Oreamuno\SY_062016_082019\Clipping_Shapes'
 
 # Results:
 # results_path = r'P:\aktiv\2018_DLR_DIRT-X\300_Modelling\310_Models\01_Erosion_model\18_SY_052016_042018\Results\Rain_only'
-results_path = r'Y:\Abt1\hiwi\Oreamuno\SY_062016_082019\Calculations\GIT_codes\SYSL_Results'
+results_path = r'C:\Users\Mouris\Desktop\SY_SL_Calculation_Git\Results'
 
 # Calculation constants:
 beta = 0.5639
