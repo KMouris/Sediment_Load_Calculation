@@ -63,7 +63,7 @@ def check_input_rasters(list_rasters, input_area):
                     sys.exit("Exit program. Check input raster projections.")
         i += 1
 
-    # Check pixel resolution and pixel area (assuiming input rasters are in meters)
+    # Check pixel resolution and pixel area (assuming input rasters are in meters)
     real_area = np.float32(gt_r[1]) * np.float32(gt_r[1])
     if real_area/10000 != input_area:  # If the calculated area in ha is different than the user input.
         message = "The user input area is incorrect. If the pixel size is in meters, the pixel area should be: " +\
@@ -187,14 +187,14 @@ def clip_raster(original_raster, clipped_path, shape_path):
     os.system("gdalinfo -stats " + clipped_path)
 
 
-def save_raster(array, output_path,  GT, proj):
+def save_raster(array, output_path,  gt, proj):
     """
     Function saves a np.array into a .tif raster file.
 
     Args:
     :param array: np.array with raster data to save
     :param output_path: file path (with nam and extension) with which to save raster array
-    :param GT: geotransform of resulting raster
+    :param gt: geotransform of resulting raster
     :param proj: projection for resulting raster
         """
     # 1: Get drivers in order to save outputs as raster .tif files
@@ -206,7 +206,7 @@ def save_raster(array, output_path,  GT, proj):
     outrs = driver.Create(output_path, xsize=array.shape[1], ysize=array.shape[0], bands=1, eType=gdal.GDT_Float32)
 
     # 3: Assign raster data and assaign the array to the raster
-    outrs.SetGeoTransform(GT)
+    outrs.SetGeoTransform(gt)
     outrs.SetProjection(proj)
     outband = outrs.GetRasterBand(1)
     outband.WriteArray(array)

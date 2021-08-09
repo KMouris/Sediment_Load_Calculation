@@ -12,10 +12,10 @@ The equations in this module, corresponding to the calculation of the SY and SL 
 * SDR and SY:
     Ferro, V.; Porto, P. Sediment delivery distributed (SEDD) model. J. Hydrol. Eng. 2000, 5, 411–422.
         DOI: https://doi.org/10.1061/(ASCE)1084-0699(2000)5:4(411)
-    Fernandez, C., Wu, J. Q., McCool, D. K., & Stöckle, C. O. (2003). Estimating water erosion and sediment yield with
-        GIS, RUSLE, and SEDD. Journal of soil and Water Conservation, 58(3), 128-136.
+    Jain, M.K., Kothyari, U.C., 2000. Estimation of soil erosion and sediment yield using GIS.
+        Hydrological Sciences Journal 45, 771–786. https://doi.org/10.1080/02626660009492376
 
-* Sediment loss: Renard, K. et al. 1997. Predicting Soil Erosion by Water: A Guide to Conservation Planning
+* Soil loss: Renard, K. et al. 1997. Predicting Soil Erosion by Water: A Guide to Conservation Planning
                 with the Revised Universal Soil Loss Equation (RUSLE). s.l. : Agricultural Handbook 703, USDA-ARS, 1997
 
 * Bed load: Turowski, J. M., Rickenmann, D., & Dadson, S. J. (2010). The partitioning of the total sediment load of a
