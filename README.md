@@ -3,11 +3,12 @@
 # Introduction
 
 The module calculates the monthly pixel-specific soil loss (SL), the monthly pixel-specific sediment yield (SY) and the 
-total monthly sediment yield for each sub-catchment based on the revised universal soil loss equation (RUSLE), using the
-SEDD model to estimate the sediment delivery. The sediment yield is defined as the sediment mass per unit time or 
+total monthly sediment yield for each sub-catchment based on the revised universal soil loss equation (RUSLE ([Renard, 1997](https://www.ars.usda.gov/arsuserfiles/64080530/rusle/ah_703.pdf)))
+, using the sediment delivery distributed (SEDD, [(Ferro and Porto, 2000)](https://ascelibrary.org/doi/10.1061/%28ASCE%291084-0699%282000%295%3A4%28411%29)) 
+model to estimate the sediment delivery. The sediment yield is defined as the sediment mass per unit time or 
 sediment load that passes a defined boundary, such as the outlet of a sub-catchment. 
-The bedload can be optionally guesstimated as a function the suspended sediment transport rate. In this case the model 
-needs to be calibrated to the observed suspended sediment loads. 
+The bedload can be optionally guesstimated as a function of the suspended sediment transport rate 
+[(Turowski et al., 2010)](https://ascelibrary.org/doi/10.1061/%28ASCE%291084-0699%282000%295%3A4%28411%29). 
 
 
 ## Libraries
@@ -28,7 +29,7 @@ The following input variables must be specified to run the code:
 |`calc_bed_load`| BOOLEAN | Optional bed load guesstimation  |
 |`results_path`| STRING |Path of the main result folder|
 |`beta`| FLOAT |catchment-specific beta parameter for the SEDD model|
-|`cell_area`| FLOAT |pixel area (ha)|
+|`pixel_area`| FLOAT |pixel area (ha)|
 
 ### Input raster and shape files
 
@@ -40,7 +41,7 @@ The following input variables must be specified to run the code:
 |`p_path`| STRING | path for the support practice factor (.tif format)  |
 |`tt_path`| STRING | path for the travel time raster (.tif format)  |
 |`r_folder`| STRING | path to the 'monthly' R factor rasters (.tif, date information must be included in the format YYYYMM)  |
-|`clip_path`| STRING | path to the subcatchment shapes (format: Catchment_NAME.shp  |
+|`clip_path`| STRING | path to the subcatchment shapes (format: Catchment_NAME.shp)  |
 
 Please note: All raster files must have the same extent and pixel size (resolution).
 
