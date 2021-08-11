@@ -45,7 +45,8 @@ The following input variables must be specified to run the code:
 
 Please note: All raster files must have the same extent and pixel size (resolution).
 
-**Result folder:** 
+## Output files
+
 The output files for each sub-catchment as well as for the total catchment area are written to separate subfolders. 
 These subfolders contain the monthly pixel-specific soil loss (`SL_YYYYMMM_Catchmentname.tif`), the monthly pixel-specific 
 sediment yield (`SY_YYYYMMM_Name.tif`) and the total total monthly sediment yield for each sub-catchment 
