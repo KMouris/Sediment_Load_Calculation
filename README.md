@@ -58,3 +58,8 @@ The bedload fraction can be optionally computed and written to the output table 
 Please note:
 If observed suspended loads were used for calibration, the sediment yield represents the suspended sediment yield 
 excluding bed load.
+
+# Authors
+- Kilian Mouris
+- Maria Fernanda Morales Oreamuno
+- Sebastian Schwindt
