@@ -10,6 +10,10 @@ sediment load that passes a defined boundary, such as the outlet of a sub-catchm
 The bedload can be optionally guesstimated as a function of the suspended sediment transport rate 
 [(Turowski et al., 2010)](https://ascelibrary.org/doi/10.1061/%28ASCE%291084-0699%282000%295%3A4%28411%29). 
 
+## Authors
+- Kilian Mouris
+- Maria Fernanda Morales Oreamuno
+- Sebastian Schwindt
 
 ## Libraries
 
@@ -62,7 +66,3 @@ excluding bed load.
 ## Code Diagram
 ![](Images/SYSL_diagram.jpg)
 
-# Authors
-- Kilian Mouris
-- Maria Fernanda Morales Oreamuno
-- Sebastian Schwindt
