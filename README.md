@@ -59,6 +59,9 @@ Please note:
 If observed suspended loads were used for calibration, the sediment yield represents the suspended sediment yield 
 excluding bed load.
 
+## Code Diagram
+![](Images/SYSL_diagram.jpg)
+
 # Authors
 - Kilian Mouris
 - Maria Fernanda Morales Oreamuno
