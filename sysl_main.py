@@ -1,6 +1,4 @@
 """
-@author: María Fernanda Morales Oreamuno
-
 The module calculates the monthly pixel-specific soil loss (SL), the pixel-specific sediment yield (SY) and the total
 sediment yield for each sub-catchment based on the revised universal soil loss equation (RUSLE), using the SEDD model
 to estimate the sediment delivery. The bedload can be optionally guesstimated as a function the suspended sediment

@@ -1,6 +1,4 @@
 """
-@author: Maria Fernanda Morales Oreamuno
-
 Module contains functions that correspond to raster data reading extraction and that take the .tif raster files as
 input.
 """

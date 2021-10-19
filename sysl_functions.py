@@ -1,6 +1,4 @@
 """
-@author: Kilian Mouris and Maria Fernanda Morales Oreamuno
-
 Module contains functions that relate to the calculations on either masked or unmasked np.arrays, which correspond to
 the input raster data.
 

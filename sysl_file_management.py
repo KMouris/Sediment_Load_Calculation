@@ -1,7 +1,4 @@
 """
-@author: Maria Fernanda Morales Oreamuno
-
-
 Module contains functions that reads and create files and folders, including reading file names and saving files other
 than raster files (e.g. .txt files).
 """
