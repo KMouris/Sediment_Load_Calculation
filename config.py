@@ -59,7 +59,7 @@ results table for each subcatchment.
 - pixel_area = float, area of a single raster pixel (in ha)
 """
 # Dates
-start_date = '201710'
+start_date = '201605'
 end_date = '201804'
 calc_bed_load = True
 
@@ -80,7 +80,7 @@ clip_path = r'Y:\Abt1\hiwi\Oreamuno\SY_062016_082019\Clipping_Shapes'
 
 # Results:
 # results_path = r'P:\aktiv\2018_DLR_DIRT-X\300_Modelling\310_Models\01_Erosion_model\18_SY_052016_042018\Results\Rain_only'
-results_path = r'C:\Users\Mouris\Desktop\SY_SL_Calculation_Git\Results'
+results_path = r'Y:\Abt1\hiwi\Oreamuno\SY_062016_082019\Calculations\GIT_codes\Results'
 
 # Calculation constants:
 beta = 0.5639

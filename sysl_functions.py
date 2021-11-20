@@ -42,12 +42,12 @@ def calculate_sdr(tt, beta, path, gt, proj, save):
     :return: np.array with SDR values
     """
     sdr = np.exp(tt * (-beta))
-    sdr = np.where(sdr.mask == True, np.nan, sdr)  # Convert all masked pixels to np.nan values
+    sdr = np.where(sdr.mask, np.nan, sdr)  # Convert all masked pixels to np.nan values
 
     if save:
         # Save SDR to folder:
-        path = path + "\SDR"  # Create Folder path
-        sdr_name = path + "\SDR.tif"  # Create file name
+        path = os.path.join(path, "SDR")          # Create Folder path
+        sdr_name = os.path.join(path, "SDR.tif")  # Create file name
 
         if not os.path.exists(path):  # If the SDR folder does not exist, create one
             print("Creating folder: ", path)

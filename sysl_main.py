@@ -45,13 +45,15 @@ start_time = start_time = time.time()
 start_date = fm.get_date(start_date)
 end_date = fm.get_date(end_date)
 
+fm.check_folder(results_path, additional_folders=False)
+
 # Get all R raster .tif file paths into a list. The list is then filtered to only include the dates within the input
 # data range.
-R_filenames = sorted(glob.glob(r_folder + "\*.tif"))
+R_filenames = sorted(glob.glob(r_folder + "/*.tif"))
 R_filenames = fm.filter_raster_lists(R_filenames, start_date, end_date, "Rfactor")
 
 # Get all shapes into a list
-clip_filenames = glob.glob(clip_path + "\*.shp")
+clip_filenames = glob.glob(clip_path + "/*.shp")
 # print(Clip_filenames)
 
 # Check input raster properties and get raster properties:
@@ -99,7 +101,7 @@ for file in R_filenames:
     R_array = rc.raster_to_array(file)  # Extract the data from the Rfactor file into a masked array
 
     # Create folder to save the Total watershed files. Checks if it already exists, if not it creates it
-    total_path = results_path + "\\Total"
+    total_path = os.path.join(results_path, "Total")
     fm.check_folder(total_path)
 
     # Calculate results for each R factor file (soil Loss(SL), sediment yield (SY), total SY)
@@ -108,15 +110,15 @@ for file in R_filenames:
     sy_tot_array = r_calc.calculate_total_sy(sy_array)
 
     # Save the resulting rasters for the total watershed
-    save_sl = total_path + "\SL\SL_Banja_" + r_date + "_Total.tif"  # Assign raster pth, including name and extension
+    save_sl = os.path.join(total_path, 'SL', f'SL_Banja_{r_date}_Total.tif')
     rc.save_raster(sl_array, save_sl, gt, proj)  # Save array as raster
     data_summary[0][i][0] = np.nanmean(sl_array)  # Get SL mean, and save to the 1st column of each array, row "i"
 
-    save_sy = total_path + "\SY\SY_Banja_" + r_date + ".tif"  # Assign raster pth, including name and extension
+    save_sy = os.path.join(total_path, 'SY', f'SY_Banja_{r_date}.tif')
     rc.save_raster(sy_array, save_sy, gt, proj)  # Save array as raster
     data_summary[0][i][1] = np.nanmean(sy_array)  # Get SY mean, and save to the 2nd column of each array, row "i"
 
-    save_sy_tot = total_path + "\SY_Total\SYTot_Banja_" + r_date + ".tif"  # assign output file name
+    save_sy_tot = os.path.join(total_path, 'SY_Total', f'SYTot_Banja_{r_date}.tif')
     rc.save_raster(sy_tot_array, save_sy_tot, gt, proj)  # Save array as raster
     data_summary[0][i][2] = np.nanmean(sy_tot_array)  # Get SL_tot mean
 
@@ -131,15 +133,15 @@ for file in R_filenames:
         shape_name = os.path.splitext(os.path.basename(shape))[0][10:]  # File name must be is Catchment_NAME.
 
         # Create folders to save clipped rasters:
-        save_path = results_path + "\\" + shape_name
+        save_path = os.path.join(results_path, shape_name)
         fm.check_folder(save_path)
 
         # Clip SL and SY rasters to shape and save resulting raster automatically
-        save_clip_sl = save_path + "\\SL\SL_" + r_date + "_" + shape_name + ".tif"
+        save_clip_sl = os.path.join(save_path, 'SL', f'SL_{r_date}_{shape_name}.tif')
         rc.clip_raster(save_sl, save_clip_sl, shape)  # Clip and save SL raster
         data_summary = r_calc.clipped_sl_mean(save_clip_sl, data_summary, i, k)
 
-        save_clip_sy = save_path + "\\SY\SY_" + r_date + "_" + shape_name + ".tif"
+        save_clip_sy = os.path.join(save_path, 'SY', f'SY_{r_date}_{shape_name}.tif')
         rc.clip_raster(save_sy, save_clip_sy, shape)  # Clip and save SY raster
 
         # Generate the Total SY raster and save mean SY and total SY to 3D array
@@ -154,7 +156,7 @@ for file in R_filenames:
         gt_clip, proj_clip = rc.get_raster_data(save_clip_sy)
 
         # Save Clipped total SY array to raster:
-        save_name = save_path + "\\SY_Total\SYTot_" + r_date + "_" + shape_name + ".tif"
+        save_name = os.path.join(save_path, 'SY_Total', f'SYTot_{r_date}_{shape_name}.tif')
         rc.save_raster(sy_tot_array_clip, save_name, gt_clip, proj_clip)
 
         k += 1
@@ -168,12 +170,13 @@ print("Time to save rasters: ", time.time() - start_time)
 for k in range(0, int(data_summary.shape[0])):
     # Get the name of the array in order:
     if k == 0:
-        file_name = total_path + "\\BanjaResults.txt"
+        file_name = os.path.join(total_path, "BanjaResults.txt")
     else:  # for catchments, the file name must be is Catchment_NAME.
         shape_name = os.path.splitext(os.path.basename(clip_filenames[k - 1])[10:])[0]
-        file_name = results_path + "\\" + shape_name + "\\" + shape_name + ".txt"
+        file_name = os.path.join(results_path, shape_name, f'{shape_name}.txt')
     # Save array using function
     fm.save_summary_table(data_summary, k, dates_vector, file_name)
 
 print("Time to save summary tables: ", time.time() - raster_time)
 print('Total time: ', time.time() - start_time)
+x=1

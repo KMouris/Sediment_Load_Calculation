@@ -66,20 +66,24 @@ def get_date(file_path):
     return date
 
 
-def check_folder(path):
+def check_folder(path, additional_folders=True):
     """
     Function checks if a folder, in which the data for a given watershed will be saved, exists and, if it doesn't, it
     creates it, along with the sub-folders in which to save the soil loss (SL) sediment yield (SY) and total SY.
 
      Args:
     :param path: path of folder to check for
+    :param additional_folders: boolean, if True create subfolders for SL, SY, Total SY results, if False, only check
+    input folder
     """
     if not os.path.exists(path):
         print("Creating folder: ", path)
         os.makedirs(path)
-        os.makedirs(path+"\\SL")
-        os.makedirs(path + "\\SY")
-        os.makedirs(path + "\\SY_Total")
+        if additional_folders:
+            print("Creating additional folders for SL, SY, SY_Total")
+            os.makedirs(os.path.join(path, "SL"))
+            os.makedirs(os.path.join(path, "SY"))
+            os.makedirs(os.path.join(path, "SY_Total"))
 
 
 def filter_raster_lists(raster_list, date1, date2, file_name):
