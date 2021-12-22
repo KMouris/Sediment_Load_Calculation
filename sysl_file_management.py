@@ -71,7 +71,6 @@ def check_folder(path, additional_folders=True):
     Function checks if a folder, in which the data for a given watershed will be saved, exists and, if it doesn't, it
     creates it, along with the sub-folders in which to save the soil loss (SL) sediment yield (SY) and total SY.
 
-     Args:
     :param path: path of folder to check for
     :param additional_folders: boolean, if True create subfolders for SL, SY, Total SY results, if False, only check
     input folder
@@ -90,7 +89,6 @@ def filter_raster_lists(raster_list, date1, date2, file_name):
     """
     Function filters input list to only include files with within a given data range (date1-date2; analysis range).
 
-    Args:
     :param raster_list: list, with file paths, whose names contain the date in either YYYYMM or YYMM format
     :param date1: datetime variable, analysis start date (in datetime format)
     :param date2: datetime variable, analysis end date (in datetime format)
@@ -108,7 +106,8 @@ def filter_raster_lists(raster_list, date1, date2, file_name):
             new_list.append(elem)
 
     if len(new_list) == 0:
-        message = "ERROR: There are no {} input raster files corresponding to the input date range. Check input.".format(file_name)
+        message = "ERROR: There are no {} input raster files corresponding to the input date range. Check input.".format(
+            file_name)
         sys.exit(message)
 
     # Check if there is one input file per month to analyze
@@ -118,7 +117,7 @@ def filter_raster_lists(raster_list, date1, date2, file_name):
     if not n_months == len(new_list) and not n_days == len(new_list) and not n_hours == len(new_list):
         message = "ERROR: One or more of the raster files between {} and {} is missing from {} input files.".format(
             str(date1.strftime('%Y%m')), str(date2.strftime('%Y%m')), file_name) + \
-                                         " Check input rasters for missing date(s) or check date range."
+                  " Check input rasters for missing date(s) or check date range."
         sys.exit(message)
 
     return new_list
@@ -129,7 +128,6 @@ def save_summary_table(TDA, k, dates, save_path):
     Function saves the data from a numpy array into a .txt file. The data in the 3D np.array corresponds to the summary
     data (mean SL, mean SY, total SY, and bed load (optional)) for each month.
 
-    Args:
     :param TDA: 3D np.array where results are saved.
     :param k: int, the array from the 3D array to save for (which corresponds to a given watershed)
     :param dates: np.array, with the date for each analyzed month (in string YYYYMM format)

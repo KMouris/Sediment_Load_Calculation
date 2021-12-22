@@ -14,7 +14,6 @@ def check_input_rasters(list_rasters, input_area):
     program. If all rasters have the same configuration, the GEOTransform and projection for the Rfactor_REM_db raster
     is returned, to serve as the default data for rasters to be created.
 
-    Args:
     :param list_rasters: list, with all raster data paths to check and compare
     :param input_area: float, with the area of each pixel (in ha), which was set by the user.
 
@@ -56,16 +55,16 @@ def check_input_rasters(list_rasters, input_area):
                 decision = input(message)
                 while decision != "0" and decision != "1":  # If the user inputs an invalid option.
                     print("Invalid input '", decision, "'.")
-                    decision = input(message)               # Resend message
-                if decision == "0":                         # If user wants to stop the program.
+                    decision = input(message)  # Resend message
+                if decision == "0":  # If user wants to stop the program.
                     sys.exit("Exit program. Check input raster projections.")
         i += 1
 
     # Check pixel resolution and pixel area (assuming input rasters are in meters)
     real_area = np.float32(gt_r[1]) * np.float32(gt_r[1])
-    if real_area/10000 != input_area:  # If the calculated area in ha is different than the user input.
-        message = "The user input area is incorrect. If the pixel size is in meters, the pixel area should be: " +\
-                  str(real_area/10000) + " ha."
+    if real_area / 10000 != input_area:  # If the calculated area in ha is different than the user input.
+        message = "The user input area is incorrect. If the pixel size is in meters, the pixel area should be: " + \
+                  str(real_area / 10000) + " ha."
         sys.exit(message)
 
     return gt_r, proj_r
@@ -77,7 +76,6 @@ def check_clipped_raster(raster_path, shape_name):
     pixels are masked, then it means the clipping shape is not within the total watershed and thus no calculations can
     be done on it.
 
-    Args:
     :param raster_path: path of clipped raster file (including name.tif)
     :param shape_name: path of shapefile with which the raster_path raster was clipped.
 
@@ -95,7 +93,7 @@ def check_clipped_raster(raster_path, shape_name):
         # Exit message
         name = os.path.basename(shape_name)
         message = 'The shape ' + name + \
-                  " falls outside of the total raster and thus generates an empty raster." +\
+                  " falls outside of the total raster and thus generates an empty raster." + \
                   " Check the input shape file and run program again. "
         sys.exit(message)
 
@@ -107,16 +105,15 @@ def get_raster_data(raster_path):
     """
         Function extracts the GEOTransform and projection from a raster file
 
-        Args:
         :param raster_path: raster file path, including name.tif
 
         :return: 2 tuples, one with the GEOTransform and one with the projection
         """
     try:
         raster = gdal.Open(raster_path)  # Extract raster from path
-        gt = raster.GetGeoTransform()    # Get GEOTransform Data: coordinate left upper corner, pixel size, 0, coord.
+        gt = raster.GetGeoTransform()  # Get GEOTransform Data: coordinate left upper corner, pixel size, 0, coord.
         #                                  lower right corner, 0, pixel size
-        proj = raster.GetProjection()    # Get projection of raster
+        proj = raster.GetProjection()  # Get projection of raster
     except AttributeError:
         print("The input file " + raster_path + " is not a valid raster file or does not exist.")
     else:
@@ -127,7 +124,6 @@ def create_masked_array(array, no_data):
     """
         Function masks the no_data values in an input array, which contains the data values from a raster file
 
-        Args:
         :param array: np.array to mask
         :param no_data: float with value to mask in array
 
@@ -142,7 +138,6 @@ def raster_to_array(raster_path):
         Function extracts raster data from input raster file and saves it to an array. This array is then masked using
         the function 'create_masked_array'.
 
-        Args:
         :param raster_path: path for .tif raster file
 
         :return: masked np.array (masking no data values)
@@ -151,7 +146,7 @@ def raster_to_array(raster_path):
          and the raster data are all changed to np.float32 to compare them with the same precision.
         """
     raster = gdal.Open(raster_path)  # Read raster file
-    band = raster.GetRasterBand(1)   # Get raster band (the 1st one, since the inputs have only 1)
+    band = raster.GetRasterBand(1)  # Get raster band (the 1st one, since the inputs have only 1)
     no_data = np.float32(band.GetNoDataValue())  # Get NoData value
 
     array = np.float32(band.ReadAsArray())  # Save band info as array
@@ -164,7 +159,6 @@ def clip_raster(original_raster, clipped_path, shape_path):
     """
     Function clips the raster to the same extents as an input shapefile and saves the clipped raster using gdalwarp.
 
-    Args:
     :param original_raster: path of raster to clip to shape extent (interpolated raster)
     :param clipped_path: file path (including extension and name) where to save the clipped raster
     :param shape_path: file path (including extension and name) where to save the clipped raster
@@ -185,11 +179,10 @@ def clip_raster(original_raster, clipped_path, shape_path):
     os.system("gdalinfo -stats " + clipped_path)
 
 
-def save_raster(array, output_path,  gt, proj):
+def save_raster(array, output_path, gt, proj):
     """
     Function saves a np.array into a .tif raster file.
 
-    Args:
     :param array: np.array with raster data to save
     :param output_path: file path (with nam and extension) with which to save raster array
     :param gt: geotransform of resulting raster
@@ -197,7 +190,7 @@ def save_raster(array, output_path,  gt, proj):
         """
     # 1: Get drivers in order to save outputs as raster .tif files
     driver = gdal.GetDriverByName("GTiff")  # Get Driver and save it to variable
-    driver.Register()                       # Register driver variable
+    driver.Register()  # Register driver variable
 
     # 2: Create the raster files to save, with all the data: folder + name, number of columns (x), number of rows (y),
     # No. of bands, output data type (gdal type)

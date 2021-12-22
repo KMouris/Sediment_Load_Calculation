@@ -30,15 +30,12 @@ Notes:
 * Module calculates bed load based on the total SY (if corresponding user input calc_bed_load is True) and adds result
     to the resulting summary table.
 """
-# Import files
-from config import *
+import sysl_file_management as fm
 import sysl_functions as r_calc
 import sysl_raster_calculations as rc
-import sysl_file_management as fm
+# Import files
+from config import *
 
-# -------------------------------------------------------------------------------------------------------------------#
-# --------------------------------------------MAIN CODE--------------------------------------------------------------#
-# -------------------------------------------------------------------------------------------------------------------#
 start_time = start_time = time.time()
 
 # Set the date ranges to analyze for:
@@ -85,7 +82,7 @@ dates_vector = np.full((len(R_filenames), 1), "", dtype=object)
 # print("3D shape: ", data_summary.shape)
 # print("Dates shape: ", dates_vector.shape)
 
-# Loop through R factor rasters ------------------------------------------------------------------------------------ #
+# Loop through R factor rasters
 i = 0  # loop for every row in the 3D array (for every measurement month)
 for file in R_filenames:
     r_name = os.path.basename(file)  # Get complete name of raster being analyzed (including extension)
@@ -93,9 +90,6 @@ for file in R_filenames:
     # Get date:
     date = fm.get_date(file)
     r_date = str(date.strftime("%Y%m"))
-
-    # print("Name: ", r_name)
-    # print("Date: ", r_date)
 
     # Save the masked array for the R factor raster
     R_array = rc.raster_to_array(file)  # Extract the data from the Rfactor file into a masked array
@@ -127,7 +121,7 @@ for file in R_filenames:
         bedL = r_calc.calculate_bl(sy_tot_array, r_date)
         data_summary[0][i][3] = bedL
 
-    # Loop through Clipping Shapes (Masks) ------------------------------------------------------------------------- #
+    # Loop through Clipping Shapes (Masks)
     k = 1  # Loop for every array in the 3D array. Starts at 1, since array[0] is the total watershed.
     for shape in clip_filenames:
         shape_name = os.path.splitext(os.path.basename(shape))[0][10:]  # File name must be is Catchment_NAME.
@@ -179,4 +173,4 @@ for k in range(0, int(data_summary.shape[0])):
 
 print("Time to save summary tables: ", time.time() - raster_time)
 print('Total time: ', time.time() - start_time)
-x=1
+x = 1
