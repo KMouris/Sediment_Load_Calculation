@@ -60,22 +60,29 @@ and added to the results table for each subcatchment.
 start_date = '201605'
 end_date = '201804'
 calc_bed_load = True
+seasonal_cfactor = True
 
 # Import input rasters:
-cp_path = r'Y:\Abt1\hiwi\Oreamuno\SY_062016_082019\Rasters\Cp_Mean_snap.tif'
 k_path = r'Y:\Abt1\hiwi\Oreamuno\SY_062016_082019\Rasters\kfac_st_snap.tif'
 ls_path = r'Y:\Abt1\hiwi\Oreamuno\SY_062016_082019\Rasters\LS_V11b.tif'
 p_path = r'Y:\Abt1\hiwi\Oreamuno\SY_062016_082019\Rasters\p_factor.tif'
 tt_path = r'Y:\Abt1\hiwi\Oreamuno\SY_062016_082019\Rasters\traveltime_final_h_snap.tif'
 
+if seasonal_cfactor:
+    print('Seasonal C factor')
+    c_winter_path = r'P:\aktiv\2018_DLR_DIRT-X\300_Modelling\310_Models\01_Erosion_model\18b_SeasonalC_runs\Rasters\C_winter_resampled.tif'
+    c_summer_path = r'P:\aktiv\2018_DLR_DIRT-X\300_Modelling\310_Models\01_Erosion_model\18b_SeasonalC_runs\Rasters\C_summer_resampled.tif'
+else:
+    cp_path = r'Y:\Abt1\hiwi\Oreamuno\SY_062016_082019\Rasters\Cp_Mean_snap.tif'
+
 # Rfactor rasters:
-r_folder = r'Y:\Abt1\hiwi\Oreamuno\SY_062016_082019\Calculations\Python_Programs\Results\RFactor_REM_db\Non-CorrectedData'
+r_folder = r'P:\aktiv\2018_DLR_DIRT-X\300_Modelling\310_Models\01_Erosion_model\18_SY_052016_042018\Modified_R_new_snowdetection\daily_input_final'
 
 # Clipping shape:
 clip_path = r'Y:\Abt1\hiwi\Oreamuno\SY_062016_082019\Clipping_Shapes'
 
 # Results:
-results_path = r'C:\Users\Mouris\Desktop\SY_SL_Calculation_Git\Results'
+results_path = r'C:\Users\Mouris\Desktop\SY_SL_Calculation_Git\results'
 
 # Calculation constants:
 beta = 0.5639

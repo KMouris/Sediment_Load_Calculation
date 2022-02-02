@@ -36,7 +36,7 @@ import sysl_raster_calculations as rc
 # Import files
 from config import *
 
-start_time = start_time = time.time()
+start_time = time.time()
 
 # Set the date ranges to analyze for:
 start_date = fm.get_date(start_date)
@@ -55,16 +55,23 @@ clip_filenames = glob.glob(clip_path + "/*.shp")
 
 # Check input raster properties and get raster properties:
 # If more input files are used, they must be added AT THE END of the list.
-raster_list = [R_filenames[0], cp_path, k_path, ls_path, p_path, tt_path]
+if seasonal_cfactor:
+    raster_list = [R_filenames[0], k_path, ls_path, p_path, tt_path, c_winter_path, c_summer_path]
+else:
+    raster_list = [R_filenames[0], cp_path, k_path, ls_path, p_path, tt_path]
 gt, proj = rc.check_input_rasters(raster_list, pixel_area)
 
 # Save each constant into an array: if more input rasters are used, add them here with a corresponding array name
 # factor_array
-cp_array = rc.raster_to_array(cp_path)  # Array with C factor values
 k_array = rc.raster_to_array(k_path)  # Array with K factor values
 p_array = rc.raster_to_array(p_path)  # Array with P factor values
 ls_array = rc.raster_to_array(ls_path)  # Array with LS factor values
 tt_array = rc.raster_to_array(tt_path)  # Array with transport time values
+if seasonal_cfactor:
+    c_summer_array = rc.raster_to_array(c_summer_path)
+    c_winter_array = rc.raster_to_array(c_winter_path)
+else:
+    cp_array = rc.raster_to_array(cp_path)  # Array with C factor values
 
 # Get SDR raster, which is independent of R factor and thus constant. The function also saves the SDR, if last input
 # value is set to "True"
@@ -87,9 +94,12 @@ i = 0  # loop for every row in the 3D array (for every measurement month)
 for file in R_filenames:
     r_name = os.path.basename(file)  # Get complete name of raster being analyzed (including extension)
 
-    # Get date:
+    # Get date and month to distinguish between summer and winter:
     date = fm.get_date(file)
     r_date = str(date.strftime("%Y%m"))
+    print(r_date)
+    r_month = r_date[4:6]
+    r_month = int(r_month)
 
     # Save the masked array for the R factor raster
     R_array = rc.raster_to_array(file)  # Extract the data from the Rfactor file into a masked array
@@ -99,7 +109,18 @@ for file in R_filenames:
     fm.check_folder(total_path)
 
     # Calculate results for each R factor file (soil Loss(SL), sediment yield (SY), total SY)
-    sl_array = r_calc.calculate_sl(R_array, cp_array, k_array, p_array, ls_array)
+    if seasonal_cfactor:
+        if r_month == 1 or r_month == 2 or r_month == 3 or r_month == 10 or r_month == 11 or r_month == 12:
+            print('winter month')
+            sl_array = r_calc.calculate_sl(R_array, c_winter_array, k_array, p_array,
+                                           ls_array)  # Calculate SY for eac R Factor
+        else:
+            print('summer month')
+            sl_array = r_calc.calculate_sl(R_array, c_summer_array, k_array, p_array,
+                                           ls_array)  # Calculate SY for eac R Factor
+    else:
+        sl_array = r_calc.calculate_sl(R_array, cp_array, k_array, p_array, ls_array)
+
     sy_array = r_calc.calculate_sy(sl_array, SDR_array, pixel_area)
     sy_tot_array = r_calc.calculate_total_sy(sy_array)
 
