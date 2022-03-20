@@ -32,6 +32,8 @@ and added to the results table for each subcatchment.
 * Input rasters:
     *All rasters must have the same extent, pixel size (resolution) 
 - cp_path: string, path for the land cover factor (.tif format)
+- c_winter_path: string, path for the seasonal land cover factor (.tif format; if seasonal_cfactor = True)
+- c_summer_path: string, path for the seasonal land cover factor (.tif format; if seasonal_cfactor = True)
 - k_path: string, path for the soil erodibility factor (.tif format)
 - ls_path: string, path for the slope length and steepness factor (.tif format)
 - p_path: string, path for the support practice factor (.tif format)
@@ -63,26 +65,26 @@ calc_bed_load = True
 seasonal_cfactor = True
 
 # Import input rasters:
-k_path = r'Y:\Abt1\hiwi\Oreamuno\SY_062016_082019\Rasters\kfac_st_snap.tif'
-ls_path = r'Y:\Abt1\hiwi\Oreamuno\SY_062016_082019\Rasters\LS_V11b.tif'
-p_path = r'Y:\Abt1\hiwi\Oreamuno\SY_062016_082019\Rasters\p_factor.tif'
-tt_path = r'Y:\Abt1\hiwi\Oreamuno\SY_062016_082019\Rasters\traveltime_final_h_snap.tif'
+k_path = r''
+ls_path = r''
+p_path = r'
+tt_path = r''
 
 if seasonal_cfactor:
     print('Seasonal C factor')
-    c_winter_path = r'P:\aktiv\2018_DLR_DIRT-X\300_Modelling\310_Models\01_Erosion_model\18b_SeasonalC_runs\Rasters\C_winter_resampled.tif'
-    c_summer_path = r'P:\aktiv\2018_DLR_DIRT-X\300_Modelling\310_Models\01_Erosion_model\18b_SeasonalC_runs\Rasters\C_summer_resampled.tif'
+    c_winter_path = r''
+    c_summer_path = r''
 else:
-    cp_path = r'Y:\Abt1\hiwi\Oreamuno\SY_062016_082019\Rasters\Cp_Mean_snap.tif'
+    cp_path = r''
 
 # Rfactor rasters:
-r_folder = r'P:\aktiv\2018_DLR_DIRT-X\300_Modelling\310_Models\01_Erosion_model\18_SY_052016_042018\Modified_R_new_snowdetection\daily_input_final'
+r_folder = r''
 
 # Clipping shape:
-clip_path = r'Y:\Abt1\hiwi\Oreamuno\SY_062016_082019\Clipping_Shapes'
+clip_path = r''
 
 # Results:
-results_path = r'C:\Users\Mouris\Desktop\SY_SL_Calculation_Git\results'
+results_path = r''
 
 # Calculation constants:
 beta = 0.5639
